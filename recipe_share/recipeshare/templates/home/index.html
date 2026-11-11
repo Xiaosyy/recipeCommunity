@@ -1,0 +1,11 @@
+{% if not spa_fragment|default(false) %}{% extends 'layouts/public.html' %}{% endif %}
+{% block title %}{% if not spa_fragment|default(false) %}RecipeShare — Cook, Share, Connect{% endif %}{% endblock %}
+{% block content %}
+{% include 'partials/flash_messages.html' %}
+{% set heading='Share Your Recipes.' %}{% set highlighted_heading='Discover New Flavors.' %}{% set description='Explore recipes created and loved by a global community of home cooks.' %}
+{% include 'components/home/hero.html' %}
+{% set features=[('⌕','Discover Recipes','Find a dish for every occasion.'),('⌖','Find By Location','Explore food near you.'),('★','Rate & Review','Help cooks improve.'),('♡','Join The Community','Share what you love.')] %}
+{% include 'components/home/feature-grid.html' %}
+{% include 'components/home/category-discovery.html' %}
+{% include 'components/home/recipe-discovery.html' %}
+{% endblock %}

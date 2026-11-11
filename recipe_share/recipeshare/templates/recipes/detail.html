@@ -1,0 +1,281 @@
+{% if not spa_fragment|default(false) %}{% extends 'layouts/' ~ (layout|default('public')) ~ '.html' %}{% endif %}
+{% set is_owner = (session.get('user_id') is not none) and (session.get('user_id') == recipe.author_id or
+session.get('user_role') == 'admin') %}
+{% block title %}{% if not spa_fragment|default(false) %}{{ recipe.title }} — RecipeShare{% endif %}{% endblock %}
+{% block content %}
+<section class="recipe-detail-page module-page">
+  <nav class="recipe-breadcrumb" aria-label="Breadcrumb">
+    <a href="{{ '/home' if session.get('user_id') else '/' }}" data-spa-link>⌂ Home</a>
+    <span>›</span>
+    <a href="/recipes" data-spa-link>Recipes</a>
+    <span>›</span>
+    <strong>{{ recipe.title }}</strong>
+  </nav>
+  {% include 'partials/flash_messages.html' %}
+
+  <div class="recipe-detail-layout">
+    <main>
+      <div class="recipe-detail-heading">
+        <div class="recipe-detail-media">
+          {% if recipe.video_path %}
+          <video src="{{ recipe.video_path }}" controls playsinline preload="metadata" {% if recipe.image_path and
+            recipe.image_path !=recipe.video_path %}poster="{{ recipe.image_path }}" {% endif %}></video>
+          {% elif recipe.image_path and (recipe.image_path.lower().endswith(('.mp4', '.webm', '.mov', '.ogg', '.ogv',
+          '.m4v')) or (recipe.media_mime_type or '').startswith('video/')) %}
+          <video src="{{ recipe.image_path }}" controls playsinline preload="metadata"></video>
+          {% elif recipe.image_path or recipe.image_url or recipe.storage_path %}
+          <img src="{{ recipe.image_path or recipe.image_url or recipe.storage_path }}" alt="{{ recipe.title }}">
+          {% else %}
+          <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=800&q=80" alt="{{ recipe.title }}">
+          {% endif %}
+        </div>
+
+        <div class="recipe-detail-summary">
+          {% if recipe.status == 'draft' %}
+          <div class="recipe-draft-banner" role="alert">
+            <div class="recipe-draft-banner__content">
+              <strong>✎ Draft Recipe</strong>
+              <p>This recipe is currently unpublished and only visible to you.</p>
+            </div>
+            {% if is_owner %}
+            <a href="{{ url_for('home.edit_recipe', slug=recipe.slug) }}" class="recipe-draft-banner__btn" data-spa-link>
+              ✎ Edit & Publish
+            </a>
+            {% endif %}
+          </div>
+          {% endif %}
+
+          <div class="recipe-detail-top-bar">
+            <p class="eyebrow recipe-detail-category-pill">{{ recipe.category_name or 'Community recipe' }}</p>
+
+            {% if is_owner %}
+            <div class="recipe-owner-controls" data-recipe-owner-controls>
+              <a href="{{ url_for('home.edit_recipe', slug=recipe.slug) }}" class="recipe-owner-edit-btn" data-spa-link>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                  stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M12 20h9" />
+                  <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
+                </svg>
+                <span>Edit Recipe</span>
+              </a>
+
+              <div class="recipe-owner-menu-wrap" data-recipe-owner-menu>
+                <button type="button" class="recipe-owner-dots-btn" data-recipe-owner-menu-trigger aria-haspopup="menu"
+                  aria-expanded="false" aria-label="More recipe actions">
+                  ⋮
+                </button>
+                <div class="recipe-owner-dropdown" data-recipe-owner-dropdown role="menu" hidden>
+                  <a href="{{ url_for('home.edit_recipe', slug=recipe.slug) }}" class="recipe-owner-dropdown__item"
+                    role="menuitem" data-spa-link>
+                    <span class="recipe-owner-dropdown__icon" aria-hidden="true">✎</span>
+                    <span>Edit Recipe</span>
+                  </a>
+                  <form method="post" action="{{ url_for('home.delete_recipe', slug=recipe.slug) }}"
+                    class="recipe-owner-delete-form" data-no-spa>
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="recipe-owner-dropdown__item recipe-owner-dropdown__item--danger"
+                      role="menuitem" data-recipe-delete-btn>
+                      <span class="recipe-owner-dropdown__icon" aria-hidden="true">🗑</span>
+                      <span>Delete Recipe</span>
+                    </button>
+                  </form>
+                  <button type="button" class="recipe-owner-dropdown__item" role="menuitem" data-owner-share-btn>
+                    <span class="recipe-owner-dropdown__icon" aria-hidden="true">↗</span>
+                    <span>Share Recipe</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+            {% endif %}
+          </div>
+
+          <h1>{{ recipe.title }}</h1>
+
+          <div class="recipe-detail-rating">
+            <strong>{{ "%.1f"|format(recipe.average_rating|float) }}</strong>
+            <div class="recipe-rating-input" role="group" aria-label="Rate this recipe" data-slug="{{ recipe.slug }}">
+              {% for star in range(1, 6) %}
+              <button type="button" class="recipe-rate-star {% if recipe.user_rating|int >= star %}is-active{% endif %}"
+                data-rating="{{ star }}" aria-label="Rate {{ star }} stars">★</button>
+              {% endfor %}
+            </div>
+            <small>{{ recipe.review_count }} reviews</small>
+          </div>
+
+          <p>{{ recipe.description }}</p>
+
+          <div class="recipe-detail-stats">
+            <div><span>◷</span>
+              <p>Prep Time<strong>{{ recipe.prep_minutes or 0 }} mins</strong></p>
+            </div>
+            <div><span>♨</span>
+              <p>Cook Time<strong>{{ recipe.cook_minutes or 0 }} mins</strong></p>
+            </div>
+            <div><span>⏳</span>
+              <p>Total Time<strong>{{ (recipe.prep_minutes or 0) + (recipe.cook_minutes or 0) }} mins</strong></p>
+            </div>
+          </div>
+
+          <div class="recipe-actions" data-recipe-actions data-slug="{{ recipe.slug }}">
+            <button type="button" class="recipe-action recipe-like-action {% if recipe.is_liked %}is-active{% endif %}"
+              data-action="like">♡ <span>Like</span> <strong>{{ recipe.like_count }}</strong></button>
+            <button type="button" class="recipe-action recipe-save-action {% if recipe.is_saved %}is-active{% endif %}"
+              data-action="save">▱ <span>Save</span></button>
+            <button type="button" class="recipe-action" data-action="share">↗ Share</button>
+          </div>
+          <p class="recipe-action-status" data-recipe-status role="status" aria-live="polite"></p>
+        </div>
+      </div>
+
+      <div class="recipe-detail-content">
+        <section class="recipe-info-panel">
+          <div class="recipe-info-panel__header">
+            <h2>♨ Ingredients</h2>
+            {% if is_owner %}
+            <a href="{{ url_for('home.edit_recipe', slug=recipe.slug) }}#ingredients-section"
+              class="recipe-section-edit-pill" data-spa-link>✎ Edit</a>
+            {% endif %}
+          </div>
+          {% if recipe.ingredients %}
+          <ul class="ingredient-grid">
+            {% for ingredient in recipe.ingredients %}
+            {% set qty_val = ingredient.quantity|float %}
+            {% set qty_str = (qty_val|int) if qty_val == (qty_val|int) else (qty_val|round(2)) %}
+            <li>
+              <span>{{ ingredient.name }}</span>
+              <strong>{{ qty_str }} {{ ingredient.unit }}</strong>
+            </li>
+            {% endfor %}
+          </ul>
+          {% else %}
+          <p class="recipe-detail-empty">Ingredients will be added when this recipe is updated.</p>
+          {% endif %}
+        </section>
+
+        <section class="recipe-info-panel recipe-instructions">
+          <div class="recipe-info-panel__header">
+            <h2>🍴 Step-by-Step Cooking Instructions</h2>
+            {% if is_owner %}
+            <a href="{{ url_for('home.edit_recipe', slug=recipe.slug) }}#instructions-section"
+              class="recipe-section-edit-pill" data-spa-link>✎ Edit</a>
+            {% endif %}
+          </div>
+          {% if recipe.steps %}
+          <ol data-recipe-steps-list>
+            {% for step in recipe.steps %}
+            <li {% if loop.index> 3 %}data-extra-step hidden{% endif %}>
+              <span>{{ loop.index }}</span>
+              <div>
+                <strong>Step {{ loop.index }}</strong>
+                <p>{{ step }}</p>
+              </div>
+            </li>
+            {% endfor %}
+          </ol>
+          {% if recipe.steps|length > 3 %}
+          <button type="button" class="recipe-view-more-steps" data-toggle-steps>
+            <span>View More Steps</span>
+            <span aria-hidden="true">⌄</span>
+          </button>
+          {% endif %}
+          {% else %}
+          <p class="recipe-detail-empty">Cooking instructions are not available yet.</p>
+          {% endif %}
+        </section>
+      </div>
+    </main>
+
+    <aside class="recipe-detail-aside">
+      <section class="recipe-aside-author-card">
+        <div class="recipe-aside-author-top">
+          <p class="detail-aside-label">Recipe by</p>
+          {% if not is_owner %}
+          <button type="button" class="recipe-follow-action {% if recipe.is_following %}is-active{% endif %}"
+            data-slug="{{ recipe.slug }}" data-author-id="{{ recipe.author_id }}">{{ 'Following' if recipe.is_following
+            else 'Follow' }}</button>
+          {% else %}
+          <span class="recipe-owner-tag">Author</span>
+          {% endif %}
+        </div>
+
+        <a href="/users/{{ recipe.author_name }}" class="recipe-aside-author-identity" data-spa-link
+          title="View {{ recipe.author_name }}'s profile">
+          {% if recipe.author_avatar %}
+          <img src="{{ recipe.author_avatar }}" alt="{{ recipe.author_name }}" class="recipe-aside-avatar">
+          {% else %}
+          <span class="recipe-aside-avatar recipe-aside-avatar--fallback">{{ (recipe.author_name or 'C')[:1]|upper
+            }}</span>
+          {% endif %}
+          <div class="recipe-aside-author-info">
+            <strong>{{ recipe.author_name or 'Community Kitchen' }}</strong>
+            <small class="recipe-aside-author-meta"><span data-author-follower-count="{{ recipe.author_id }}">{{
+                recipe.author_follower_count|default(0) }}</span> followers • {{ recipe.author_recipe_count|default(0)
+              }} recipes</small>
+          </div>
+        </a>
+
+        <div class="recipe-aside-title-block">
+          <small>Your recipe title</small>
+          <strong>{{ recipe.title }}</strong>
+        </div>
+
+        <div class="recipe-aside-details-block">
+          <h2>📄 Recipe Details</h2>
+          <dl class="recipe-aside-details-list">
+            <div>
+              <dt>Category</dt>
+              <dd>{{ recipe.category_name or 'Community' }}</dd>
+            </div>
+            <div>
+              <dt>Cuisine</dt>
+              <dd>{{ recipe.category_name or 'Filipino' }}</dd>
+            </div>
+            <div>
+              <dt>Location</dt>
+              <dd>{{ recipe.location_name or 'Philippines' }}</dd>
+            </div>
+            {% set total_mins = (recipe.prep_minutes or 0) + (recipe.cook_minutes or 0) %}
+            <div>
+              <dt>Difficulty</dt>
+              <dd>{{ 'Easy' if total_mins <= 45 else ('Medium' if total_mins <= 90 else 'Hard') }}</dd>
+            </div>
+          </dl>
+        </div>
+
+        <div class="recipe-aside-stats-row">
+          <p>Views<strong>{{ recipe.view_count }}</strong></p>
+          <p>Likes<strong>{{ recipe.like_count }}</strong></p>
+          <p>Saves<strong>{{ recipe.save_count }}</strong></p>
+        </div>
+      </section>
+
+      <section class="recipe-aside-info-card">
+        <div class="recipe-info-panel__header">
+          <h2>💡 Additional Information</h2>
+          {% if is_owner %}
+          <a href="{{ url_for('home.edit_recipe', slug=recipe.slug) }}" class="recipe-section-edit-pill" data-spa-link>✎
+            Edit</a>
+          {% endif %}
+        </div>
+        <ul class="recipe-additional-info-list">
+          <li><span>🔸</span>
+            <div><strong>Cooking Tips:</strong> {{ recipe.cooking_tips or 'Simmer gently to bring out the full flavor.' }}</div>
+          </li>
+          <li><span>⭐</span>
+            <div><strong>Serving Suggestion:</strong> {{ recipe.serving_suggestion or 'Serve warm with steamed rice.' }}</div>
+          </li>
+          <li><span>🧡</span>
+            <div><strong>Food Type:</strong> {{ recipe.food_type or recipe.category_name or 'Asian' }}</div>
+          </li>
+          <li><span>💧</span>
+            <div><strong>Taste:</strong> {{ recipe.taste or 'Savory and aromatic' }}</div>
+          </li>
+          <li><span>🟢</span>
+            <div><strong>Best Served:</strong> {{ recipe.best_served or 'Lunch or Dinner' }}</div>
+          </li>
+        </ul>
+      </section>
+    </aside>
+  </div>
+</section>
+{% endblock %}

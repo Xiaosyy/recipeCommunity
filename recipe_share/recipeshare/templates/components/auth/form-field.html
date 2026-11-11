@@ -1,0 +1,9 @@
+<div class="auth-field-wrap">
+  <div class="input-with-icon{% if password %} password-field{% endif %}{% if error %} has-error{% endif %}">
+    <span aria-hidden="true">{{ icon }}</span>
+    <label class="sr-only" for="{{ field_id }}">{{ label }}</label>
+    <input id="{{ field_id }}" name="{{ field_name }}"{% if password %} type="password"{% endif %}{% if value %} value="{{ value }}"{% endif %}{% if autocomplete %} autocomplete="{{ autocomplete }}"{% endif %}{% if minlength %} minlength="{{ minlength }}"{% endif %}{% if maxlength %} maxlength="{{ maxlength }}"{% endif %}{% if required %} required{% endif %} placeholder="{{ placeholder }}">
+    {% if password %}<button type="button" class="password-toggle" aria-label="Show password" aria-controls="{{ field_id }}">◉</button>{% endif %}
+  </div>
+  {% if error %}<small class="field-error" role="alert">{{ error }}</small>{% endif %}
+</div>

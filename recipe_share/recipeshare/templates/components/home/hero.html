@@ -1,0 +1,9 @@
+<section class="hero home-hero">
+  <div class="hero-copy">
+    <p class="eyebrow">{{ eyebrow|default('A world of flavor') }}</p>
+    <h1>{{ heading }}<br><em>{{ highlighted_heading }}</em></h1>
+    <p>{{ description }}</p>
+    {% set form_class='hero-search' %}{% set input_id='hero-search' %}{% set show_icon=false %}{% set placeholder='Search recipes by name or word...' %}
+    {% include 'components/search-bar.html' %}
+  </div>
+</section>

@@ -1,0 +1,118 @@
+{% if not spa_fragment|default(false) %}{% extends 'layouts/app.html' %}{% endif %}
+{% block title %}{% if not spa_fragment|default(false) %}{{ page_title }} — RecipeShare{% endif %}{% endblock %}
+{% block content %}
+<section class="profile-collection-page">
+  <nav class="profile-breadcrumb"><span>⌂</span> Home <b>/</b> <a href="{{ '/users/me' if is_owner|default(true) else '/users/' ~ profile.username }}" data-spa-link>{{ profile.display_name }}</a> <b>/</b> {{ page_title }}</nav>
+  <div class="profile-collection-header">
+    <div class="collection-profile-avatar">{% if profile.avatar_path %}<img src="{{ profile.avatar_path }}" alt="">{% else %}<span>{{ profile.display_name[:1]|upper }}</span>{% endif %}</div>
+    <div><h1>{{ page_icon }} {{ page_title }}</h1><p>{{ total_count|default(recipes|length) }} {{ item_label|default('item' if (recipes|length == 1) else 'items') }}</p></div>
+    {% if is_owner|default(true) %}
+    <a class="profile-edit-button" href="/recipes/create" data-spa-link>＋ Add Recipe</a>
+    {% endif %}
+  </div>
+  <nav class="profile-tabs" aria-label="Profile sections">
+    <a href="{{ '/users/me' if is_owner|default(true) else '/users/' ~ profile.username }}" data-spa-link class="{{ 'is-active' if active_tab == 'profile' else '' }}">♙ <span>Profile</span></a>
+    <a href="{{ '/followers' if is_owner|default(true) else '/users/' ~ profile.username ~ '/followers' }}" data-spa-link class="{{ 'is-active' if active_tab == 'followers' else '' }}">♣ <span>Followers</span> <small class="tab-badge" data-profile-badge="followers">{{ follower_count|default(0) }}</small></a>
+    <a href="{{ '/following' if is_owner|default(true) else '/users/' ~ profile.username ~ '/following' }}" data-spa-link class="{{ 'is-active' if active_tab == 'following' else '' }}">⚑ <span>Following</span> <small class="tab-badge" data-profile-badge="following">{{ following_count|default(0) }}</small></a>
+    <a href="{{ '/likes' if is_owner|default(true) else '/users/' ~ profile.username ~ '/likes' }}" data-spa-link class="{{ 'is-active' if active_tab == 'likes' else '' }}">♥ <span>Likes</span> <small class="tab-badge" data-profile-badge="likes">{{ like_count|default(0) }}</small></a>
+    {% if is_owner|default(true) %}
+    <a href="/my-posts" data-spa-link class="{{ 'is-active' if active_tab == 'posts' else '' }}">▤ <span>My Posts</span></a>
+    <a href="/my-recipes" data-spa-link class="{{ 'is-active' if active_tab == 'recipes' else '' }}">♨ <span>My Recipes</span></a>
+    <a href="/drafts" data-spa-link class="{{ 'is-active' if active_tab == 'drafts' else '' }}">✎ <span>Drafts</span>{% if draft_count|default(0) > 0 %}<small class="tab-badge tab-badge--draft">{{ draft_count }}</small>{% endif %}</a>
+    <a href="/favorites" data-spa-link class="{{ 'is-active' if active_tab == 'saved' else '' }}">♡ <span>Saved</span></a>
+    <a href="/settings" data-spa-link class="{{ 'is-active' if active_tab == 'settings' else '' }}">⚙ <span>Settings</span></a>
+    {% endif %}
+  </nav>
+  {% include 'partials/flash_messages.html' %}
+
+  {% if active_tab in ['followers', 'following'] %}
+  <div class="profile-users-grid">
+    {% for user_item in user_list|default([]) %}
+    <article class="profile-user-card">
+      <div class="profile-user-card__avatar">
+        {% if user_item.avatar_path %}<img src="{{ user_item.avatar_path }}" alt="{{ user_item.display_name }}">{% else %}<span>{{ user_item.display_name[:1]|upper }}</span>{% endif %}
+      </div>
+      <div class="profile-user-card__info">
+        <a href="/users/{{ user_item.username }}" data-spa-link class="profile-user-card__name">
+          <strong>{{ user_item.display_name }}</strong>
+          <span class="verified-badge" title="Verified">✓</span>
+        </a>
+        <small class="profile-user-card__handle">@{{ user_item.username }}</small>
+        {% if user_item.bio %}<p class="profile-user-card__bio">{{ user_item.bio }}</p>{% endif %}
+        <div class="profile-user-card__meta">
+          <span>♨ {{ user_item.recipe_count }} {{ 'recipe' if user_item.recipe_count == 1 else 'recipes' }}</span>
+          <span>♣ {{ user_item.follower_count }} {{ 'follower' if user_item.follower_count == 1 else 'followers' }}</span>
+        </div>
+      </div>
+      <div class="profile-user-card__action">
+        {% if current_user_id and current_user_id != user_item.id %}
+        <button type="button" class="profile-follow-action {{ 'is-active' if user_item.is_following else '' }}" data-user-id="{{ user_item.id }}">
+          {{ 'Following' if user_item.is_following else 'Follow' }}
+        </button>
+        {% else %}
+        <a href="/users/{{ user_item.username }}" class="profile-view-user-btn" data-spa-link>View</a>
+        {% endif %}
+      </div>
+    </article>
+    {% else %}
+    <div class="profile-empty-card">
+      <span>{{ page_icon }}</span>
+      <h2>No {{ page_title|lower }} yet</h2>
+      <p>{{ 'Nobody is following this user yet. Share delicious recipes to build your audience!' if active_tab == 'followers' else 'Not following anyone yet. Explore community chefs and follow your favorites!' }}</p>
+      <a href="/recipes" data-spa-link>Explore recipes</a>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="profile-collection-grid">
+    {% for recipe in recipes|default([]) %}
+    <article class="profile-collection-card {% if recipe.status == 'draft' %}profile-collection-card--draft{% endif %}">
+      <a href="{{ url_for('home.edit_recipe', slug=recipe.slug) if recipe.status == 'draft' else '/recipes/' ~ recipe.slug }}" data-spa-link>
+        {% set c_img = recipe.image_path or recipe.image_url or recipe.storage_path or 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=800&q=80' %}
+        {% if c_img and c_img.lower().endswith(('.mp4', '.webm', '.mov', '.ogg', '.ogv', '.m4v')) %}
+          <div class="profile-collection-image"><video src="{{ c_img }}" muted playsinline preload="metadata" style="width:100%;height:100%;object-fit:cover;display:block"></video>{% if recipe.status == 'draft' %}<span class="profile-draft-chip">✎ Draft</span>{% endif %}</div>
+        {% else %}
+          <div class="profile-collection-image"><img src="{{ c_img }}" alt="{{ recipe.title }}" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block">{% if recipe.status == 'draft' %}<span class="profile-draft-chip">✎ Draft</span>{% endif %}</div>
+        {% endif %}
+      </a>
+      <div class="profile-collection-body">
+        <div>
+          <a href="{{ url_for('home.edit_recipe', slug=recipe.slug) if recipe.status == 'draft' else '/recipes/' ~ recipe.slug }}" data-spa-link><strong>{{ recipe.title }}</strong></a>
+          <span class="recipe-status-pill status-{{ recipe.status }}">{{ recipe.status|title }}</span>
+        </div>
+        <div class="profile-collection-footer">
+          {% if recipe.status == 'draft' %}
+          <p class="recipe-draft-muted">✎ Draft · Unpublished</p>
+          {% else %}
+          <p>♡ {{ recipe.like_count }} likes</p>
+          {% endif %}
+          {% if recipe.author_name %}
+          <small class="recipe-card-author">by {{ recipe.author_name }}</small>
+          {% endif %}
+          {% if recipe.slug %}
+          {% if recipe.status == 'draft' %}
+          <a href="{{ url_for('home.edit_recipe', slug=recipe.slug) }}" class="recipe-section-edit-pill recipe-section-edit-pill--draft" data-spa-link>✎ Edit & Publish</a>
+          {% elif active_tab == 'recipes' %}
+          <a href="{{ url_for('home.edit_recipe', slug=recipe.slug) }}" class="recipe-section-edit-pill" data-spa-link>✎ Edit</a>
+          {% endif %}
+          {% endif %}
+        </div>
+      </div>
+    </article>
+    {% else %}
+    <div class="profile-empty-card">
+      <span>{{ page_icon }}</span>
+      <h2>No {{ page_title|lower }} yet</h2>
+      {% if active_tab == 'drafts' %}
+      <p>You don't have any saved drafts right now. Every recipe you create can be saved as draft to finish later.</p>
+      <a href="/recipes/create" data-spa-link>＋ Create a recipe</a>
+      {% else %}
+      <p>{{ 'You have not liked any recipes yet.' if active_tab == 'likes' else 'Your content will appear here.' }}</p>
+      <a href="/recipes" data-spa-link>Explore recipes</a>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+</section>
+{% endblock %}

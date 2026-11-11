@@ -1,0 +1,9 @@
+<aside class="auth-story">
+  <div class="auth-story-inner">
+    {% include 'components/auth/story-brand.html' %}
+    <h2>Good Food<br>Brings People<br>Together</h2>
+    <p>{{ description }}</p>
+    {% if show_benefits %}<div class="auth-benefits">{% for icon,label in [('♙','Share<br>Recipes'),('♟','Discover<br>New Flavors'),('♡','Connect<br>with Food Lovers')] %}<span><b>{{ icon }}</b>{{ label|safe }}</span>{% endfor %}</div>{% endif %}
+  </div>
+  <p class="auth-script">{{ script_heading|default('Good Food')|safe }} <b>♥</b></p>
+</aside>

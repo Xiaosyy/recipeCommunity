@@ -1,0 +1,40 @@
+{% if not spa_fragment|default(false) %}{% extends 'layouts/app.html' %}{% endif %}
+{% block title %}{% if not spa_fragment|default(false) %}Profile Settings — RecipeShare{% endif %}{% endblock %}
+{% block content %}
+<section class="profile-settings-page">
+  <nav class="profile-breadcrumb"><span>⌂</span> Home <b>/</b> {{ profile.display_name }} <b>/</b> Settings</nav>
+  <h1>Profile Settings</h1>
+  <nav class="profile-tabs" aria-label="Profile sections">
+    <a href="/users/me" data-spa-link>♙ <span>Profile</span></a>
+    <a href="/settings" data-spa-link class="is-active">⚙ <span>Settings</span></a>
+  </nav>
+  {% include 'partials/flash_messages.html' %}
+  <div class="profile-settings-form">
+    <form method="post" action="/settings/profile-picture" enctype="multipart/form-data"
+      class="profile-settings-card profile-picture-card" data-profile-picture-form>
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <div class="profile-settings-avatar">
+        {% if profile.avatar_path %}<img src="{{ profile.avatar_path }}" alt="Current profile picture"
+          data-profile-avatar-preview>{% else %}<span data-profile-avatar-preview>{{ profile.display_name[:1]|upper
+          }}</span>{% endif %}
+      </div>
+      <div>
+        <h2>Profile picture</h2>
+        <p data-profile-avatar-status>PNG, JPG, JPEG, WEBP, or GIF. Maximum 10 MB.</p>
+        <div class="profile-picture-actions">
+          <label class="profile-upload-button">Change profile picture<input type="file" name="avatar"
+              accept="image/png,image/jpeg,image/webp,image/gif" data-profile-avatar-input hidden></label>
+          <button class="profile-save-button" type="submit" data-profile-avatar-submit>Upload Picture</button>
+        </div>
+      </div>
+    </form>
+    <form method="post" action="/settings/profile" class="profile-settings-card">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <h2>Profile information</h2>
+      <label>Display name<input name="display_name" value="{{ profile.display_name }}" maxlength="100" required></label>
+      <label>Bio<textarea name="bio" rows="4" maxlength="1000">{{ profile.bio or '' }}</textarea></label>
+      <button class="profile-save-button" type="submit">Save Changes</button>
+    </form>
+  </div>
+</section>
+{% endblock %}

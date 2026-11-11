@@ -1,0 +1,4 @@
+<section class="discovery-section">
+  {% set eyebrow='Explore' %}{% set title='Popular Recipe Categories' %}{% set description='' %}{% set link_href='/categories' %}{% set link_label='View all categories' %}{% include 'components/section-header.html' %}
+  {% if categories %}{% include 'components/category-grid.html' %}{% else %}{% include 'home/partials/empty_recipe_discovery.html' %}{% endif %}
+</section>

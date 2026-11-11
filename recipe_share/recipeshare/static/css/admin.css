@@ -1,0 +1,18 @@
+/* ==========================================================================
+   RecipeShare - Admin Module Stylesheet (admin.css)
+   ========================================================================== */
+
+@import './admin-management.css';
+
+.admin-page-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 3rem;
+}
+
+.admin-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+

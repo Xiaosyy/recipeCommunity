@@ -1,0 +1,23 @@
+{% from 'components/ui-components.html' import icon %}
+<aside class="app-sidebar" aria-label="Primary application navigation">
+  <a class="sidebar-brand" href="/home" aria-label="RecipeShare home" data-spa-link>
+    <img class="sidebar-logo-image" src="{{ community_logo_url }}" alt="RecipeShare Community">
+  </a>
+  <nav class="sidebar-nav" id="app-sidebar-navigation">
+    <a href="/home" data-spa-link>{{ icon('home') }}<span>Home</span></a>
+    {% if session.get('user_role') == 'admin' %}
+    <a href="/admin/dashboard" data-spa-link>{{ icon('dashboard') }}<span>Dashboard</span></a>
+    <a href="/admin/users" data-spa-link>{{ icon('dashboard') }}<span>Users</span></a>
+    <a href="/admin/content" data-spa-link>{{ icon('recipes') }}<span>Content</span></a>
+    <a href="/admin/activity" data-spa-link>{{ icon('inventory') }}<span>Activity</span></a>
+    {% else %}
+    <a href="/dashboard" data-spa-link>{{ icon('inventory') }}<span>Dashboard</span></a>
+    <a href="/recipes" data-spa-link>{{ icon('recipes') }}<span>Recipes</span></a>
+    <a href="/recipes/create" data-spa-link>{{ icon('create') }}<span>Create Recipe</span></a>
+    <a href="/categories" data-spa-link>{{ icon('categories') }}<span>Categories</span></a>
+    <a href="/locations" data-spa-link>{{ icon('location') }}<span>By Location</span></a>
+    <a href="/my-recipes" data-spa-link>{{ icon('recipes') }}<span>My Recipes</span></a>
+    <a href="/settings" data-spa-link>{{ icon('settings') }}<span>Settings</span></a>
+    {% endif %}
+  </nav>
+</aside>

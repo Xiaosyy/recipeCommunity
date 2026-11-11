@@ -1,0 +1,270 @@
+/* ==========================================================================
+   RecipeShare - Dashboard Module Stylesheet (dashboard.css)
+   ========================================================================== */
+
+/* Dashboard Layout Grid */
+.dashboard-page {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: 1.25rem;
+  padding: 1.25rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* Dashboard Title Card */
+.dashboard-title-card {
+  grid-column: 1;
+  background: white;
+  border: 1px solid var(--border, #d9e1dd);
+  border-radius: 12px;
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 14px;
+}
+
+.dashboard-title-card h1 {
+  font-size: 1.6rem;
+  margin: 0;
+  color: var(--green-dark, #0d382d);
+}
+
+.dashboard-title-card p {
+  color: var(--muted, #66756e);
+  margin: 0.25rem 0 0;
+  font-size: 0.88rem;
+}
+
+/* Dashboard Metric Cards */
+.dashboard-metrics {
+  grid-column: 1;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.dashboard-metric-card {
+  position: relative;
+  background: white;
+  border: 1px solid var(--border, #d9e1dd);
+  border-radius: 12px;
+  padding: 1rem 1.15rem;
+  min-height: 92px;
+  height: auto;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.95rem;
+  box-shadow: 0 2px 6px rgba(24, 60, 48, 0.04);
+}
+
+.dashboard-metric-card .metric-change {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  margin: 0;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: #e8f7ef;
+  color: #0d8a5f;
+  font-size: 0.68rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.dashboard-metric-card strong {
+  display: block;
+  font-size: 1.55rem;
+  color: var(--green-dark, #0d382d);
+  font-weight: 800;
+  line-height: 1.15;
+}
+
+.dashboard-metric-card span {
+  display: block;
+  color: var(--muted, #66756e);
+  font-size: 0.78rem;
+  margin-bottom: 0.15rem;
+  font-weight: 600;
+}
+
+/* Dashboard Charts / Highlights */
+.dashboard-charts {
+  grid-column: 1;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  background: transparent;
+  border: 0;
+  padding: 0;
+}
+
+/* Dashboard Inventory Section */
+.dashboard-inventory {
+  grid-column: 1;
+  background: white;
+  border: 1px solid var(--border, #d9e1dd);
+  border-radius: 12px;
+  padding: 1.25rem 1.5rem;
+}
+
+.inventory-toolbar {
+  display: grid;
+  grid-template-columns: auto minmax(180px, 1fr) 155px 175px;
+  gap: 0.75rem;
+  align-items: center;
+  margin-bottom: 1.25rem;
+}
+
+.inventory-tabs {
+  display: flex;
+  gap: 0.35rem;
+  background: #f1f5f3;
+  padding: 0.25rem;
+  border-radius: 8px;
+}
+
+.inventory-tabs button {
+  border: 0;
+  background: transparent;
+  padding: 0.45rem 0.85rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--ink, #1f2d27);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.inventory-tabs button.is-active {
+  background: white;
+  color: var(--green-dark, #0d382d);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+}
+
+.inventory-search input {
+  height: 38px;
+  border: 1px solid var(--border, #d9e1dd);
+  border-radius: 8px;
+  padding: 0 0.85rem;
+  font-size: 0.82rem;
+  width: 100%;
+}
+
+.inventory-category,
+.inventory-location {
+  height: 38px;
+  border: 1px solid var(--border, #d9e1dd);
+  border-radius: 8px;
+  padding: 0 0.85rem;
+  font-size: 0.82rem;
+  background: white;
+}
+
+.dashboard-recipe-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+/* Right Rail Sidebar */
+.dashboard-right-rail {
+  grid-column: 2;
+  grid-row: 1 / span 4;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.dashboard-side-card {
+  background: white;
+  border: 1px solid var(--border, #d9e1dd);
+  border-radius: 12px;
+  padding: 1.25rem;
+}
+
+/* Responsive Dashboard Rules */
+@media (max-width: 1200px) {
+  .dashboard-page {
+    grid-template-columns: minmax(0, 1fr) 260px;
+  }
+  .dashboard-recipe-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .inventory-toolbar {
+    grid-template-columns: 1fr 1fr;
+  }
+  .inventory-tabs {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 900px) {
+  .dashboard-page {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .dashboard-right-rail {
+    grid-column: 1;
+    grid-row: auto;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    display: grid;
+  }
+  .dashboard-title-card,
+  .dashboard-metrics,
+  .dashboard-charts,
+  .dashboard-inventory {
+    grid-column: 1;
+  }
+  .dashboard-metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .dashboard-recipe-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .dashboard-title-card {
+    height: auto;
+    min-height: 78px;
+  }
+  .dashboard-title-card h1 {
+    font-size: 1.35rem;
+  }
+  .dashboard-metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+  .dashboard-metric-card {
+    min-height: 86px;
+    padding: 0.9rem;
+  }
+  .dashboard-metric-card strong {
+    font-size: 1.35rem;
+  }
+  .dashboard-right-rail {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .inventory-toolbar {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .inventory-tabs {
+    grid-column: auto;
+    width: 100%;
+    overflow-x: auto;
+  }
+  .inventory-tabs button {
+    flex: 0 0 auto;
+  }
+  .inventory-search,
+  .inventory-category,
+  .inventory-location {
+    width: 100%;
+  }
+  .dashboard-recipe-grid {
+    grid-template-columns: 1fr;
+  }
+}
+

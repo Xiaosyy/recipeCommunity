@@ -1,0 +1,33 @@
+{% from 'components/ui-components.html' import dropdown %}
+<header class="app-topbar">
+  <div class="app-topbar-inner">
+    <form class="app-search ui-search" action="/recipes" method="get" role="search" data-recipe-search>
+      <span class="search-glass-icon" aria-hidden="true">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+      </span>
+      <label class="sr-only" for="app-search-query">Search recipes by name or word</label>
+      <input id="app-search-query" name="q" type="search" placeholder="Search recipes..." autocomplete="off" value="{{ query|default(request.args.get('q', '')) }}" data-global-recipe-search-input>
+      <button type="submit">Search</button>
+    </form>
+    <div class="app-user-actions">
+      <div class="app-notification-menu" data-notification-menu>
+        <button class="app-notification-button" type="button" aria-label="Notifications" aria-expanded="false" data-notification-button>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg>
+          {% set unread_count = notification_unread_count|default(0) %}
+          <span class="notification-count" data-notification-count{% if unread_count == 0 %} hidden{% endif %}>{{ unread_count }}</span>
+        </button>
+        <div class="notification-panel" data-notification-panel hidden>
+          <div class="notification-panel-header"><strong>Notifications</strong><button type="button" data-notifications-read>Mark all read</button></div>
+          <div class="notification-list" data-notification-list><p class="notification-empty">Loading notifications…</p></div>
+        </div>
+      </div>
+      {% set avatar_initial=session.get('username', 'User')[0]|upper %}
+      {% set avatar_markup='<img src="' ~ current_user_avatar_url ~ '" alt="Profile picture">' if current_user_avatar_url else '<span>' ~ avatar_initial ~ '</span>' %}
+      {{ dropdown('<span class="profile-avatar">' ~ avatar_markup ~ '</span><span class="profile-copy"><strong>Hello, ' ~ session.get('username', 'User') ~ '</strong><small>View account</small></span>', [{'url':'/users/me','label':'My profile','icon':'♙'}, {'url':'/drafts','label':'Draft recipes','icon':'✎'}, {'url':'/favorites','label':'Saved recipes','icon':'♡'}, {'url':'/settings','label':'Settings','icon':'⚙'}, {'action':'/logout','label':'Log out','icon':'↪'}], name='account', trigger_class='profile-menu-trigger') }}
+      <button class="app-mobile-menu-button" type="button" aria-expanded="false" aria-controls="app-sidebar-navigation" aria-label="Toggle navigation">☰</button>
+    </div>
+  </div>
+</header>

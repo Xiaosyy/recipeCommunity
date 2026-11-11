@@ -1,0 +1,10 @@
+<article class="recipe-card ui-card">
+  <a href="/recipes/{{ recipe.slug }}" data-spa-link>
+    {% set recipe_img = recipe.image_path or recipe.image_url or recipe.storage_path or 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=800&q=80' %}
+    <div class="recipe-card-image">
+      <img src="{{ recipe_img }}" alt="{{ recipe.title }}" loading="lazy" style="width:100%;height:100%;object-fit:cover;object-position:center;display:block;">
+      <span>{{ recipe.category_name or 'Recipe' }}</span>
+    </div>
+    <div class="recipe-card-body"><h3>{{ recipe.title }}</h3><p>{{ recipe.description or 'A community favorite worth trying.' }}</p><div class="recipe-card-meta"><span>★ {{ '%.1f'|format(recipe.average_rating or 0) }}</span><span>♡ {{ recipe.like_count }}</span></div></div>
+  </a>
+</article>

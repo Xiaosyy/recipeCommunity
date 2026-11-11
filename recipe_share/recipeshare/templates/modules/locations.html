@@ -1,0 +1,116 @@
+{% if not spa_fragment|default(false) %}{% extends 'layouts/' ~ layout ~ '.html' %}{% endif %}
+{% block title %}{% if not spa_fragment|default(false) %}Recipes by Location — RecipeShare{% endif %}{% endblock %}
+{% block content %}
+<section class="module-page location-discovery">
+  <!-- Header Section with Chef Hat Divider -->
+  <header class="location-discovery__header">
+    <div class="location-discovery__header-text">
+      <p class="location-eyebrow">A WORLD OF FLAVOR</p>
+      <h1>Recipes by location</h1>
+      <p>Discover authentic dishes from different regions and communities.</p>
+      <div class="location-chef-divider" aria-hidden="true">
+        <span class="chef-line"></span>
+        <span class="chef-hat-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6 13.8a4.5 4.5 0 1 1 2-8.5 4.5 4.5 0 0 1 8 0 4.5 4.5 0 1 1 2 8.5H6z"/>
+            <path d="M6 14h12v4a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2v-4z"/>
+            <line x1="6" y1="17" x2="18" y2="17"/>
+          </svg>
+        </span>
+        <span class="chef-line"></span>
+      </div>
+    </div>
+  </header>
+  {% include 'partials/flash_messages.html' %}
+
+  <!-- Filter Bar: Navigation Tabs on Left & Select Location Dropdown on Right -->
+  <div class="location-controls-bar">
+    <nav class="location-nav-bar" aria-label="Location filter tabs">
+      <a href="/locations" data-spa-link class="location-nav-tab {% if not selected_location %}is-active{% endif %}" data-location-id="all">
+        All Locations
+      </a>
+      {% for loc in nav_locations or locations %}
+      <a href="/locations?location_id={{ loc.id }}" data-spa-link class="location-nav-tab {% if selected_location and selected_location.id == loc.id %}is-active{% endif %}" data-location-id="{{ loc.id }}" data-location-name="{{ loc.name|lower }}">
+        {{ loc.name }} ({{ loc.recipe_count }})
+      </a>
+      {% endfor %}
+    </nav>
+
+    <!-- Interactive Select Location Dropdown -->
+    <div class="location-dropdown" data-location-dropdown>
+      <button class="location-dropdown-toggle" type="button" aria-haspopup="true" aria-expanded="false" data-location-dropdown-btn>
+        <span class="dropdown-pin">📍</span>
+        <span class="dropdown-label">{{ selected_location.name if selected_location else 'Select Location' }}</span>
+        <span class="dropdown-chevron">▾</span>
+      </button>
+      <div class="location-dropdown-menu" data-location-dropdown-menu hidden>
+        <div class="location-dropdown-search">
+          <span class="search-icon">🔍</span>
+          <input type="text" placeholder="Search for a location..." data-location-search-input aria-label="Search locations">
+        </div>
+        <ul class="location-dropdown-list" role="listbox">
+          <li role="option" class="location-dropdown-item {% if not selected_location %}is-selected{% endif %}" data-location-name="all">
+            <a href="/locations" data-spa-link>
+              <span class="dropdown-item-name">All Locations</span>
+              {% if not selected_location %}<span class="dropdown-item-check">✓</span>{% endif %}
+            </a>
+          </li>
+          {% for loc in dropdown_locations or (locations|sort(attribute='name')) %}
+          <li role="option" class="location-dropdown-item {% if selected_location and selected_location.id == loc.id %}is-selected{% endif %}" data-location-name="{{ loc.name|lower }}">
+            <a href="/locations?location_id={{ loc.id }}" data-spa-link>
+              <span class="dropdown-item-name">{{ loc.name }}</span>
+              {% if selected_location and selected_location.id == loc.id %}
+              <span class="dropdown-item-check">✓</span>
+              {% endif %}
+            </a>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3-Column Image Cards Grid (Matching Reference Design) -->
+  <div class="location-card-grid" aria-label="Recipe locations">
+    {% for loc in featured_locations or locations %}
+    <div class="location-card-wrapper" data-location-card-item data-location-id="{{ loc.id }}" data-location-name="{{ loc.name|lower }}" data-title="{{ (loc.featured_dish ~ ' ' ~ loc.name ~ ' ' ~ loc.cuisine_type)|lower }}">
+      <a class="location-card {% if selected_location and selected_location.id == loc.id %}is-active{% endif %}"
+         href="/recipes?location={{ loc.name|lower }}"
+         data-location-id="{{ loc.id }}"
+         data-location-name="{{ loc.name|lower }}"
+         data-spa-link
+         title="View recipes from {{ loc.name }}">
+        
+        <!-- Full Bleed Dish Background Image -->
+        {% if loc.image_path %}
+        <img class="location-card__bg" src="{{ loc.image_path }}" alt="{{ loc.featured_dish }} - {{ loc.name }}" loading="lazy">
+        {% endif %}
+        <div class="location-card__overlay"></div>
+
+        <!-- Top Bar inside Card: Location Badge + Favorite Heart -->
+        <div class="location-card__top">
+          <div class="location-card__badge">
+            <span class="location-card__country">{{ loc.name }}</span>
+          </div>
+          <button class="location-card__heart" type="button" aria-label="Save {{ loc.name }} location" data-save-location="{{ loc.id }}" onclick="event.preventDefault(); event.stopPropagation(); this.classList.toggle('is-saved');">
+            <span class="heart-icon">♡</span>
+          </button>
+        </div>
+
+        <!-- Bottom Bar inside Card: Dish Title & Meta + Arrow Button -->
+        <div class="location-card__bottom">
+          <div class="location-card__dish-info">
+            <h3 class="location-card__dish-title">{{ loc.featured_dish }}</h3>
+            <div class="location-card__meta">
+              <span class="meta-icon">🍽</span>
+              <span>{{ loc.recipe_count }} {{ 'recipe' if loc.recipe_count == 1 else 'recipes' }} • {{ loc.cuisine_type }}</span>
+            </div>
+          </div>
+          <span class="location-card__arrow-btn" aria-hidden="true">→</span>
+        </div>
+      </a>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

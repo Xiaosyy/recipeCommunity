@@ -1,0 +1,29 @@
+# Python bytecode and cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+
+# Environment and secrets
+.env
+
+# Flask instance
+instance/
+
+# Databases and local uploads
+*.sqlite3
+recipeshare/static/uploads/
+
+# Testing and coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Editor directories
+.vscode/
+.idea/
+*.log

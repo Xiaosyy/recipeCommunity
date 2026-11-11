@@ -1,0 +1,6 @@
+<section class="feature-grid" role="list" aria-label="RecipeShare features">
+  {% for feature in features %}
+    {% set icon=feature[0] %}{% set title=feature[1] %}{% set description=feature[2] %}
+    {% include 'components/home/feature-card.html' %}
+  {% endfor %}
+</section>

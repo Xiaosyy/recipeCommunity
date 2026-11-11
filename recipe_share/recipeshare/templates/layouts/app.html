@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="csrf-token" content="{{ csrf_token() }}">
+  <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='images/recipeshare-favicon.ico') }}">
+  <link rel="icon" type="image/png" sizes="512x512" href="{{ url_for('static', filename='images/recipeshare-favicon.png') }}">
+  <link rel="apple-touch-icon" href="{{ url_for('static', filename='images/recipeshare-favicon.png') }}">
+  <title>{% block title %}RecipeShare{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/components.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/responsive.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/ui-components.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/notifications.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/recipes.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/locations.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/register.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard-responsive.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin-management.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/account-home.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/legal.css') }}">
+</head>
+<body class="app-shell">
+  <a class="skip-link" href="#main-content">Skip to content</a>
+  {% include 'partials/app-header.html' %}
+  {% include 'partials/app-sidebar.html' %}
+  <main id="main-content" class="app-main" data-spa-main tabindex="-1">{% block content %}{% endblock %}</main>
+  <script src="{{ url_for('static', filename='js/api-client.js') }}" defer></script>
+  <script src="{{ url_for('static', filename='js/ui-animations.js') }}" defer></script>
+  <script src="{{ url_for('static', filename='js/spa-router.js') }}" defer></script>
+  <script src="{{ url_for('static', filename='js/app.js') }}" defer></script>
+  <script src="{{ url_for('static', filename='js/ui-components.js') }}" defer></script>
+  <script src="{{ url_for('static', filename='js/home.js') }}" defer></script>
+  <script src="{{ url_for('static', filename='js/dashboard.js') }}" defer></script>
+  <script src="{{ url_for('static', filename='js/recipes.js') }}" defer></script>
+  <script src="{{ url_for('static', filename='js/locations.js') }}" defer></script>
+  <script src="{{ url_for('static', filename='js/login.js') }}" defer></script>
+  <script src="{{ url_for('static', filename='js/register.js') }}" defer></script>
+  <script src="{{ url_for('static', filename='js/auth.js') }}" defer></script>
+  <script src="{{ url_for('static', filename='js/admin.js') }}" defer></script>
+  <script src="{{ url_for('static', filename='js/recipe-create.js') }}" defer></script>
+</body>
+</html>

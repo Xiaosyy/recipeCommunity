@@ -1,0 +1,19 @@
+{% if not spa_fragment|default(false) %}{% extends 'layouts/' ~ (layout|default('app')) ~ '.html' %}{% endif %}
+{% from 'components/ui-components.html' import icon %}
+{% block title %}{% if not spa_fragment|default(false) %}{{ module_title }} — RecipeShare{% endif %}{% endblock %}
+{% block content %}
+<section class="module-placeholder">
+  <div class="module-placeholder-card">
+    <div class="module-placeholder-icon">{{ icon(module_icon|default('recipes')) }}</div>
+    <h1>{{ module_title }}</h1>
+    <p>This module is ready for implementation. Add recipe and community features here soon.</p>
+    {% if session.get('user_role') == 'admin' %}
+    <a class="ui-button ui-button--primary" href="/admin/dashboard" data-spa-link>Back to administration</a>
+    {% elif session.get('user_id') %}
+    <a class="ui-button ui-button--primary" href="/dashboard" data-spa-link>Back to dashboard</a>
+    {% else %}
+    <a class="ui-button ui-button--primary" href="/" data-spa-link>Back to home</a>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

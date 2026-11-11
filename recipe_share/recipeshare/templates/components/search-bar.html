@@ -1,0 +1,6 @@
+<form class="{{ form_class|default('ui-search') }}" action="{{ action|default('/recipes') }}" role="search"{% if form_id %} id="{{ form_id }}"{% endif %} data-recipe-search>
+  <label class="sr-only" for="{{ input_id }}">{{ label|default('Search recipes') }}</label>
+  {% if show_icon|default(true) %}<span aria-hidden="true">⌕</span>{% endif %}
+  <input id="{{ input_id }}" name="{{ name|default('q') }}" value="{{ value|default('') }}" placeholder="{{ placeholder|default('Search recipes by name or word...') }}" autocomplete="off">
+  <button type="submit" aria-label="Submit search">{{ button_label|default('Search') }}</button>
+</form>

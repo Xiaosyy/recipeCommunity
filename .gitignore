@@ -1,0 +1,37 @@
+# Python bytecode and cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+
+# Flask instance
+instance/
+
+# Databases and local uploads
+*.sqlite3
+recipe_share/recipeshare/static/uploads/
+
+# Testing and coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Editor and OS directories
+.vscode/
+.idea/
+Thumbs.db
+*.log
+
+# Portable tools and executables
+tools/
+*.exe
+

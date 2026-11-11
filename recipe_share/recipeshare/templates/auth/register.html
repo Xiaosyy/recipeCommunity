@@ -1,0 +1,22 @@
+{% if not spa_fragment|default(false) %}{% extends 'layouts/auth.html' %}{% endif %}
+{% block title %}{% if not spa_fragment|default(false) %}Sign up — RecipeShare{% endif %}{% endblock %}
+{% block content %}
+<section class="auth-screen auth-screen-register">
+  {% set description='Create an account to save recipes, share your cooking, and join thousands of home cooks.' %}{% set show_benefits=false %}{% set script_heading='Cook. Share.<br>Connect.' %}{% include 'components/auth/story.html' %}
+  <div class="auth-card-wrap"><div class="auth-card register-card">
+    {% set field_values=values or {} %}{% set heading='Create Account' %}{% set description='Join the RecipeShare community' %}{% include 'components/auth/brand-card.html' %}
+    {% include 'partials/flash_messages.html' %}
+    <form method="post" action="/register" class="auth-form" novalidate>
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      {% set field_id='username' %}{% set field_name='username' %}{% set label='Username' %}{% set icon='♙' %}{% set placeholder='Username' %}{% set autocomplete='username' %}{% set minlength=3 %}{% set maxlength=30 %}{% set required=true %}{% set password=false %}{% set value=field_values.get('username','') %}{% set error=errors.username|join(' ') if errors and errors.username else '' %}{% include 'components/auth/form-field.html' %}
+      {% set field_id='email' %}{% set field_name='email' %}{% set label='Email address' %}{% set icon='@' %}{% set placeholder='Email address' %}{% set autocomplete='email' %}{% set minlength='' %}{% set maxlength='' %}{% set required=true %}{% set password=false %}{% set value=field_values.get('email','') %}{% set error=errors.email|join(' ') if errors and errors.email else '' %}{% include 'components/auth/form-field.html' %}
+      {% set field_id='password' %}{% set field_name='password' %}{% set label='Password' %}{% set icon='▣' %}{% set placeholder='Password' %}{% set autocomplete='new-password' %}{% set minlength=8 %}{% set maxlength='' %}{% set required=true %}{% set password=true %}{% set value='' %}{% set error='' %}{% include 'components/auth/form-field.html' %}
+      {% include 'components/auth/password-checklist.html' %}
+      {% set field_id='password_confirmation' %}{% set field_name='password_confirmation' %}{% set label='Confirm password' %}{% set icon='▣' %}{% set placeholder='Confirm Password' %}{% set autocomplete='new-password' %}{% set minlength=8 %}{% set required=true %}{% set password=true %}{% set value='' %}{% set error=errors.password_confirmation|join(' ') if errors and errors.password_confirmation else '' %}{% include 'components/auth/form-field.html' %}
+      {% set name='agreement' %}{% set label='I agree to the Terms of Service and Privacy Policy' %}{% set required=true %}{% set class_name='auth-agreement' %}{% include 'components/auth/checkbox.html' %}
+      {% set button_type='button' %}{% set type='submit' %}{% set label='Sign Up' %}{% set variant='primary' %}{% set size='' %}{% set extra_classes='auth-submit' %}{% include 'components/button.html' %}
+    </form>
+    <p class="auth-switch">Already have an account? <a href="/login" data-spa-link data-auth-transition="back">Log in</a></p>
+  </div></div>
+</section>
+{% endblock %}

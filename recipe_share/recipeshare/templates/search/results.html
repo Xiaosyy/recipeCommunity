@@ -1,0 +1,27 @@
+{% if not spa_fragment|default(false) %}{% extends 'layouts/app.html' %}{% endif %}
+{% block title %}{% if not spa_fragment|default(false) %}Search — RecipeShare{% endif %}{% endblock %}
+{% block content %}
+<section class="search-results-page">
+  <header class="search-results-header">
+    <div><p class="eyebrow">Topbar search</p><h1>{% if query %}Results for “{{ query }}”{% else %}Search recipes{% endif %}</h1></div>
+    <span>{{ recipes|length }} result{{ '' if recipes|length == 1 else 's' }}</span>
+  </header>
+  {% if recipes %}
+    <section class="search-results-section" aria-labelledby="recipe-search-results">
+      <h2 id="recipe-search-results">Recipes</h2>
+      <div class="search-results-grid">
+        {% for recipe in recipes %}
+          <article class="ui-card search-result-card">
+            <a href="/recipes/{{ recipe.slug }}" data-spa-link>
+              <div class="search-result-image"{% if recipe.image_path %} style="background-image:url('{{ recipe.image_path }}')"{% endif %}></div>
+              <div class="search-result-body"><span>{{ recipe.category_name or 'Recipe' }}</span><h3>{{ recipe.title }}</h3><p>{{ recipe.description }}</p><small>by {{ recipe.author_name or 'Community Chef' }} · {{ recipe.view_count }} views</small></div>
+            </a>
+          </article>
+        {% endfor %}
+      </div>
+    </section>
+  {% else %}
+    <div class="ui-empty-state"><div class="ui-empty-state__icon" aria-hidden="true">⌕</div><h2>No matching recipes</h2><p>{% if query %}Try a different recipe, category, or creator name.{% else %}Enter a recipe name to begin searching.{% endif %}</p></div>
+  {% endif %}
+</section>
+{% endblock %}

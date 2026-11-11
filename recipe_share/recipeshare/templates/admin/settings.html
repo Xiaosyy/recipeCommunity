@@ -1,0 +1,28 @@
+{% if not spa_fragment|default(false) %}{% extends 'layouts/app.html' %}{% endif %}
+{% block title %}{% if not spa_fragment|default(false) %}System Settings — RecipeShare{% endif %}{% endblock %}
+{% block content %}
+<section class="system-settings-page">
+  <header class="system-settings-header"><div class="system-title-row"><span>⚙</span><h1>System Settings</h1></div></header>
+  {% include 'partials/flash_messages.html' %}
+  <form method="post" action="/admin/settings/save" class="system-settings-form" enctype="multipart/form-data">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div class="settings-layout">
+      <aside class="settings-card community-info-card">
+        <h2>ⓘ Community Info</h2>
+        <div class="community-logo-panel"><img data-logo-preview src="{% if settings.community_logo %}{{ url_for('static', filename='uploads/logos/' ~ settings.community_logo) }}{% else %}{{ url_for('static', filename='images/recipeshare-logo.png') }}{% endif %}" alt="RecipeShare Community logo"><label class="settings-upload">⇧ Change Logo<input type="file" name="community_logo" accept="image/png,image/jpeg,image/webp" data-logo-input hidden></label></div>
+        <div class="community-summary"><strong>♟ {{ settings.community_name }}</strong><p>{{ settings.community_description }}</p></div>
+      </aside>
+      <section class="settings-card settings-general">
+        <h2>⚙ General Settings</h2>
+        <p class="settings-card-description">Update your community name and description.</p>
+        <div class="settings-fields settings-fields--reference">
+          <label>Community Name *<input name="community_name" required maxlength="100" value="{{ settings.community_name }}"></label>
+          <label>Community Description *<textarea name="community_description" maxlength="200" rows="3">{{ settings.community_description }}</textarea><small><span data-description-count>{{ settings.community_description|length }}</span>/200</small></label>
+          <button class="settings-save" type="submit">▣ Save Changes</button>
+        </div>
+        <div class="settings-illustration" aria-hidden="true"></div>
+      </section>
+    </div>
+  </form>
+</section>
+{% endblock %}

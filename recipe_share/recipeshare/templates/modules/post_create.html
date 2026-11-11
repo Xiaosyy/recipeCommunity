@@ -1,0 +1,21 @@
+{% if not spa_fragment|default(false) %}{% extends 'layouts/app.html' %}{% endif %}
+{% block title %}{% if not spa_fragment|default(false) %}Create Post — RecipeShare{% endif %}{% endblock %}
+{% block content %}
+<main class="post-create-page">
+  <header class="recipe-create-heading">
+    <div><span>▤</span><div><h1>Create Post</h1><p>Share a cooking story, tip, or community update.</p></div></div>
+    <a href="/users/me" data-spa-link>Back to Profile</a>
+  </header>
+  {% include 'partials/flash_messages.html' %}
+  <form method="post" action="{{ url_for('home.save_post') }}" class="post-create-card">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="hidden" name="status" value="draft" data-post-status-input>
+    <label>Post title<input name="title" required minlength="3" maxlength="160" placeholder="What would you like to share?"></label>
+    <label>Content<textarea name="body" required minlength="10" maxlength="5000" rows="12" placeholder="Write your post..."></textarea></label>
+    <div class="post-create-actions">
+      <button type="submit" class="recipe-draft-button" data-post-draft>Save as Draft</button>
+      <button type="submit" class="recipe-publish-button" data-post-publish>Publish Post</button>
+    </div>
+  </form>
+</main>
+{% endblock %}

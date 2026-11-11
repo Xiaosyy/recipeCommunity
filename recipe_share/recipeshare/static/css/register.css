@@ -1,0 +1,781 @@
+/* ==========================================================================
+   RecipeShare - Registration Module Stylesheet (register.css)
+   ========================================================================== */
+
+.auth-screen-register {
+  background: #eef2ed;
+}
+
+.auth-page .site-footer,
+.spa-auth-view .site-footer {
+  display: none;
+}
+
+.register-card {
+  max-width: 470px;
+  width: 100%;
+}
+
+.auth-agreement {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  font-size: 0.82rem;
+  color: #405249;
+  line-height: 1.4;
+  margin: 0.4rem 0;
+  cursor: pointer;
+}
+
+.auth-agreement input {
+  width: auto;
+  margin-top: 0.2rem;
+  accent-color: var(--green, #177252);
+  cursor: pointer;
+}
+
+.auth-field-wrap {
+  display: flex;
+  flex-direction: column;
+}
+
+.auth-form .input-with-icon > span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  left: 0.9rem;
+  line-height: 1;
+}
+
+.auth-form .input-with-icon input {
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 2.85rem;
+  line-height: 50px;
+}
+
+.auth-form .field-error {
+  color: #b42318;
+  font-size: 0.8rem;
+  line-height: 1.35;
+  margin-top: 0.35rem;
+  margin-bottom: 0.1rem;
+  padding-left: 0.25rem;
+  text-align: left;
+  display: block;
+}
+
+.auth-form .input-with-icon.has-error input {
+  border-color: #b42318;
+  background-color: #fef3f2;
+}
+
+.auth-agreement a {
+  color: var(--green, #177252);
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+.password-requirements {
+  font-size: 0.75rem;
+  color: var(--muted, #66756e);
+  margin-top: -0.4rem;
+  margin-bottom: 0.2rem;
+}
+
+.password-strength-block {
+  display: grid;
+  gap: 0.55rem;
+  margin: -0.15rem 0 0.25rem;
+  padding: 0 0.1rem;
+}
+
+.password-strength-meter {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.password-strength-title {
+  font-size: 0.86rem;
+  font-weight: 800;
+  color: #111827;
+  white-space: nowrap;
+}
+
+.password-strength-track {
+  flex: 1;
+  height: 7px;
+  border-radius: 999px;
+  background: #d5dbe1;
+  overflow: hidden;
+  position: relative;
+}
+
+.password-strength-fill {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  width: 0%;
+  background: transparent;
+  transition: width 0.25s ease, background-color 0.25s ease;
+}
+
+.password-strength-fill.is-weak {
+  width: 35%;
+  background: #e12d39;
+}
+
+.password-strength-fill.is-fair {
+  width: 58%;
+  background: #d97706;
+}
+
+.password-strength-fill.is-good {
+  width: 80%;
+  background: #ca8a04;
+}
+
+.password-strength-fill.is-strong {
+  width: 100%;
+  background: var(--green, #177252);
+}
+
+.password-strength-status {
+  font-size: 0.86rem;
+  font-weight: 800;
+  color: #111827;
+  min-width: 3.1rem;
+  text-align: right;
+}
+
+.password-checklist {
+  list-style: none;
+  margin: 0.1rem 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.42rem;
+}
+
+.password-rule {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  font-size: 0.86rem;
+  font-weight: 500;
+  color: #4b5563;
+  line-height: 1.35;
+  transition: color 0.15s;
+}
+
+.password-rule-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.15rem;
+  height: 1.15rem;
+  border-radius: 50%;
+  border: 1.5px solid #9ca3af;
+  background: transparent;
+  color: transparent;
+  font-size: 0.66rem;
+  font-weight: 800;
+  line-height: 1;
+  flex-shrink: 0;
+  box-sizing: border-box;
+  transition: background-color 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.password-rule.is-met {
+  color: var(--green, #177252);
+  font-weight: 600;
+}
+
+.password-rule.is-met .password-rule-icon {
+  background: var(--green, #177252);
+  border-color: var(--green, #177252);
+  color: #ffffff;
+}
+
+.password-rule.is-unmet {
+  color: #26322d;
+}
+
+.password-rule.is-unmet .password-rule-icon {
+  background: #111827;
+  border-color: #111827;
+  color: #ffffff;
+}
+
+@media (max-width: 600px) {
+  .register-card {
+    padding: 0 0.5rem;
+  }
+}
+
+/* ==========================================================================
+   Email OTP Verification Screen Styles
+   ========================================================================== */
+
+.otp-recipient-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  background: #ffffff;
+  border: 1px solid var(--border, #d9e1dd);
+  border-radius: 10px;
+  padding: 0.9rem 1.1rem;
+  margin-bottom: 1rem;
+}
+
+.otp-recipient-icon,
+.otp-sender-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.6rem;
+  height: 2.6rem;
+  border-radius: 50%;
+  background: rgba(23, 114, 82, 0.12);
+  color: var(--green, #177252);
+  font-size: 1.2rem;
+  flex-shrink: 0;
+  object-fit: cover;
+}
+
+.otp-recipient-text {
+  margin: 0;
+  font-size: 0.92rem;
+  color: #1f2d27;
+}
+
+.otp-expiry-note {
+  display: block;
+  margin-top: 0.15rem;
+  color: var(--muted, #66756e);
+  font-size: 0.78rem;
+}
+
+.otp-countdown-badge {
+  color: var(--green, #177252);
+  font-weight: 800;
+}
+
+.otp-countdown-badge.is-expired {
+  color: #b42318;
+}
+
+.smtp-setup-card {
+  background: #fffbeb;
+  border: 1px solid #f59e0b;
+  border-radius: 10px;
+  padding: 0.9rem 1rem;
+  margin-bottom: 1rem;
+  font-size: 0.82rem;
+  color: #1f2d27;
+}
+
+.smtp-setup-title {
+  margin: 0 0 0.25rem;
+  font-weight: 800;
+  color: #92400e;
+  font-size: 0.88rem;
+}
+
+.smtp-setup-help {
+  margin: 0 0 0.65rem;
+  line-height: 1.4;
+  color: #4b5563;
+}
+
+.smtp-setup-help a {
+  color: var(--green, #177252);
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+.smtp-setup-form {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.smtp-setup-form input {
+  height: 40px;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+  padding: 0 0.75rem;
+  font-size: 0.84rem;
+  background: #ffffff;
+  box-sizing: border-box;
+}
+
+.smtp-setup-btn {
+  height: 40px;
+  border-radius: 6px;
+  border: 0;
+  background: var(--green, #177252);
+  color: #ffffff;
+  font-weight: 800;
+  font-size: 0.84rem;
+  cursor: pointer;
+}
+
+.smtp-setup-btn:hover {
+  background: var(--green-dark, #0d382d);
+}
+
+.otp-field-group {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.otp-group-label {
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: #2e3e37;
+  text-align: center;
+}
+
+.otp-digit-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 0.55rem;
+}
+
+.otp-digit-input {
+  width: 100%;
+  height: 56px;
+  border-radius: 9px;
+  border: 1.5px solid var(--border, #d9e1dd);
+  background: #ffffff;
+  text-align: center;
+  font-size: 1.45rem;
+  font-weight: 800;
+  color: var(--green-dark, #0d382d);
+  box-sizing: border-box;
+  transition: border-color 0.15s, box-shadow 0.15s, background-color 0.15s;
+}
+
+.otp-digit-input:focus {
+  outline: none;
+  border-color: var(--green, #177252);
+  box-shadow: 0 0 0 3px rgba(23, 114, 82, 0.18);
+}
+
+.otp-digit-input.is-filled {
+  border-color: var(--green, #177252);
+  background: #f7fbf9;
+}
+
+.otp-digit-grid.has-error .otp-digit-input {
+  border-color: #b42318;
+  background-color: #fef3f2;
+}
+
+.otp-field-error {
+  text-align: center;
+  margin-top: 0.1rem !important;
+}
+
+.otp-resend-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  margin-top: 1.15rem;
+  font-size: 0.88rem;
+  color: var(--muted, #66756e);
+}
+
+.otp-resend-form {
+  display: inline;
+  margin: 0;
+}
+
+.otp-resend-btn {
+  background: transparent;
+  border: 0;
+  padding: 0;
+  color: var(--green, #177252);
+  font-weight: 800;
+  font-size: 0.88rem;
+  cursor: pointer;
+}
+
+.otp-resend-btn:hover:not(:disabled) {
+  text-decoration: underline;
+}
+
+.otp-resend-btn:disabled {
+  color: #98a69f;
+  cursor: not-allowed;
+}
+
+/* ==========================================================================
+   RecipeShare - OTP Push Notification Toast
+   ========================================================================== */
+.otp-notification-toast {
+  position: fixed;
+  top: 92px;
+  right: 24px;
+  z-index: 9999;
+  width: min(400px, calc(100vw - 32px));
+  background: #ffffff;
+  border: 1px solid rgba(13, 112, 79, 0.22);
+  border-left: 5px solid #0d704f;
+  border-radius: 12px;
+  box-shadow: 0 16px 40px rgba(10, 40, 30, 0.18), 0 4px 12px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+  animation: otpToastSlideIn 0.38s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  transition: transform 0.25s ease, opacity 0.25s ease;
+  font-family: inherit;
+}
+
+.otp-notification-toast.is-hiding {
+  animation: otpToastSlideOut 0.25s ease forwards;
+}
+
+@keyframes otpToastSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-26px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes otpToastSlideOut {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+}
+
+.otp-toast-progress-bar {
+  height: 3.5px;
+  background: linear-gradient(90deg, #0d704f, #ff9d3a);
+  width: 100%;
+  transform-origin: left;
+  animation: otpToastProgress 60s linear forwards;
+}
+
+@keyframes otpToastProgress {
+  from {
+    transform: scaleX(1);
+  }
+  to {
+    transform: scaleX(0);
+  }
+}
+
+.otp-toast-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px 8px;
+  border-bottom: 1px solid #edf3ef;
+  background: #fafcfb;
+}
+
+.otp-toast-brand {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.otp-toast-avatar {
+  border-radius: 50%;
+  flex-shrink: 0;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+}
+
+.otp-toast-titles {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.18;
+}
+
+.otp-toast-app {
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: #0d382d;
+}
+
+.otp-toast-meta {
+  font-size: 0.65rem;
+  color: #718279;
+}
+
+.otp-toast-time {
+  font-weight: 700;
+  color: #0d704f;
+}
+
+.otp-toast-close {
+  background: transparent;
+  border: 0;
+  color: #718279;
+  font-size: 1.35rem;
+  line-height: 1;
+  padding: 2px 7px;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background 0.15s, color 0.15s;
+}
+
+.otp-toast-close:hover {
+  background: #edf5f1;
+  color: #0d382d;
+}
+
+.otp-toast-body {
+  padding: 12px 14px 10px;
+}
+
+.otp-toast-message {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.otp-toast-text {
+  margin: 0;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #384d43;
+}
+
+.otp-toast-code-badge {
+  background: #edf7f2;
+  border: 1.5px dashed #0d704f;
+  padding: 4px 10px;
+  border-radius: 7px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.otp-toast-code-badge:hover {
+  background: #dff0e7;
+}
+
+.otp-toast-digit-pill {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 1.25rem;
+  font-weight: 900;
+  letter-spacing: 0.18em;
+  color: #085a3e;
+}
+
+.otp-toast-subtext {
+  margin: 8px 0 0;
+  font-size: 0.72rem;
+  color: #5c6f66;
+  line-height: 1.4;
+}
+
+.otp-toast-footer {
+  padding: 6px 14px 12px;
+}
+
+.otp-toast-autofill-btn {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 9px 14px;
+  background: #0d704f;
+  color: #ffffff;
+  border: 0;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(13, 112, 79, 0.28);
+  transition: background 0.15s, transform 0.1s, box-shadow 0.15s;
+}
+
+.otp-toast-autofill-btn:hover {
+  background: #09583e;
+  box-shadow: 0 4px 12px rgba(13, 112, 79, 0.35);
+}
+
+.otp-toast-autofill-btn:active {
+  transform: translateY(1px);
+}
+
+.otp-toast-icon {
+  font-size: 0.95rem;
+}
+
+@media (max-width: 600px) {
+  .otp-notification-toast {
+    top: 76px;
+    right: 12px;
+    left: 12px;
+    width: auto;
+  }
+}
+
+/* Device Gmail Sync Banner & Verification Gating */
+.otp-toast-gmail-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: #fdf2f2;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+.device-gmail-banner {
+  margin: 12px 0 16px;
+  background: #ffffff;
+  border: 1px solid #e1e8e5;
+  border-radius: 10px;
+  padding: 12px 14px;
+  box-shadow: 0 2px 8px rgba(18, 61, 49, 0.04);
+  transition: all 0.2s ease;
+}
+
+.device-gmail-state {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.device-gmail-state[hidden] {
+  display: none !important;
+}
+
+.device-gmail-info {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  flex: 1;
+}
+
+.device-gmail-badge-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.device-gmail-badge-icon--muted {
+  background: #f3f5f4;
+  color: #6b7771;
+}
+
+.device-gmail-badge-icon--active {
+  background: #fef0ef;
+  color: #ea4335;
+  box-shadow: 0 2px 6px rgba(234, 67, 53, 0.15);
+}
+
+.device-gmail-text {
+  display: grid;
+  gap: 2px;
+}
+
+.device-gmail-header-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.device-gmail-title {
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: #17382d;
+}
+
+.device-gmail-desc {
+  margin: 0;
+  font-size: 0.72rem;
+  color: #556760;
+  line-height: 1.35;
+}
+
+.device-gmail-tag {
+  font-size: 0.62rem;
+  font-weight: 800;
+  color: #0b724f;
+  background: #edf7f2;
+  border-radius: 6px;
+  padding: 1px 6px;
+}
+
+.device-gmail-active-email {
+  font-weight: 700;
+  color: #0e6b4d;
+}
+
+.device-gmail-login-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  border-radius: 7px;
+  border: 1px solid #d1dbd6;
+  background: #ffffff;
+  color: #1d392e;
+  font-size: 0.73rem;
+  font-weight: 800;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+}
+
+.device-gmail-login-btn:hover {
+  background: #f7faf8;
+  border-color: #0b724f;
+  color: #0b724f;
+}
+
+.device-gmail-logout-link {
+  background: transparent;
+  border: 0;
+  color: #8c9b94;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 4px;
+  white-space: nowrap;
+}
+
+.device-gmail-logout-link:hover {
+  color: #b42318;
+}
+
+@media (max-width: 600px) {
+  .device-gmail-state {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .device-gmail-actions {
+    display: flex;
+    justify-content: flex-end;
+  }
+  .device-gmail-login-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+

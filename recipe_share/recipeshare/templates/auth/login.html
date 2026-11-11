@@ -1,0 +1,19 @@
+{% if not spa_fragment|default(false) %}{% extends 'layouts/auth.html' %}{% endif %}
+{% block title %}{% if not spa_fragment|default(false) %}Log in — RecipeShare{% endif %}{% endblock %}
+{% block content %}
+<section class="auth-screen auth-screen-login">
+  {% set description='Join our community and share your favorite recipes, discover new flavors, and connect with fellow food lovers!' %}{% set show_benefits=true %}{% set script_heading='Good Food<br>Brings People<br>Together' %}{% include 'components/auth/story.html' %}
+  <div class="auth-card-wrap"><div class="auth-card">
+    {% set heading='Welcome back!' %}{% set description='Log in to your RecipeShare account' %}{% include 'components/auth/brand-card.html' %}
+    {% include 'partials/flash_messages.html' %}
+    <form method="post" action="/login" class="auth-form">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      {% set field_id='email_or_username' %}{% set field_name='email_or_username' %}{% set label='Email or username' %}{% set icon='♙' %}{% set placeholder='Email or Username' %}{% set autocomplete='username' %}{% set required=true %}{% set password=false %}{% set value=email_or_username or '' %}{% include 'components/auth/form-field.html' %}
+      {% set field_id='password' %}{% set field_name='password' %}{% set label='Password' %}{% set icon='▣' %}{% set placeholder='Password' %}{% set autocomplete='current-password' %}{% set required=true %}{% set password=true %}{% set value='' %}{% include 'components/auth/form-field.html' %}
+      <div class="auth-options">{% set name='remember' %}{% set label='Remember me' %}{% set required=false %}{% include 'components/auth/checkbox.html' %}<a href="/forgot-password" data-spa-link data-auth-transition="forward">Forgot password?</a></div>
+      {% set button_type='button' %}{% set type='submit' %}{% set label='Log In' %}{% set variant='primary' %}{% set size='' %}{% set extra_classes='auth-submit' %}{% include 'components/button.html' %}
+    </form>
+    <p class="auth-switch">Don't have an account? <a href="/register" data-spa-link data-auth-transition="forward">Sign Up</a></p>
+  </div></div>
+</section>
+{% endblock %}

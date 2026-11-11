@@ -1,0 +1,295 @@
+{% if not spa_fragment|default(false) %}{% extends 'layouts/' ~ (layout|default('public')) ~ '.html' %}{% endif %}
+{% block title %}{% if not spa_fragment|default(false) %}Recipes — RecipeShare{% endif %}{% endblock %}
+{% block content %}
+<section class="recipe-explore-page module-page">
+  <!-- Top Decorative Leaf Accent -->
+  <div class="recipe-explore-leaves" aria-hidden="true">
+    <svg width="120" height="120" viewBox="0 0 100 100" fill="none" opacity="0.65">
+      <path d="M95 5 C75 15, 60 40, 70 70 C75 50, 90 25, 95 5 Z" fill="#4d7c0f"/>
+      <path d="M70 70 C50 65, 30 75, 20 95 C40 90, 60 85, 70 70 Z" fill="#65a30d"/>
+      <path d="M95 5 C80 30, 80 60, 20 95" stroke="#365314" stroke-width="2" stroke-linecap="round"/>
+      <path d="M75 35 C65 32, 58 25, 55 18" stroke="#365314" stroke-width="1.5" stroke-linecap="round"/>
+      <path d="M68 52 C58 50, 48 45, 42 38" stroke="#365314" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>
+  </div>
+
+  <!-- Page Header -->
+  <header class="recipe-explore-header">
+    <div class="recipe-explore-header__text">
+      <p class="recipe-explore-eyebrow">OUR RECIPES</p>
+      <h1 class="recipe-explore-title">
+        <span>Explore recipes</span>
+        <span class="recipe-explore-splashes" aria-hidden="true">
+          <svg width="34" height="26" viewBox="0 0 34 26" fill="none">
+            <path d="M4 22 C7 15, 12 9, 18 5" stroke="#d97706" stroke-width="2.5" stroke-linecap="round"/>
+            <path d="M12 24 C16 16, 22 10, 28 6" stroke="#d97706" stroke-width="2.5" stroke-linecap="round"/>
+            <path d="M20 25 C24 18, 28 13, 32 9" stroke="#d97706" stroke-width="2.5" stroke-linecap="round"/>
+          </svg>
+        </span>
+      </h1>
+      <p class="recipe-explore-subtitle">Search and discover dishes shared by home cooks, cooks.</p>
+    </div>
+
+    <!-- Script Flourish on Right -->
+    <div class="recipe-explore-script-wrapper">
+      <div class="recipe-explore-script">
+        <span class="script-text">Cook · Share · Enjoy</span>
+        <svg class="script-flourish" width="180" height="24" viewBox="0 0 180 24" fill="none">
+          <path d="M6 18 C50 6, 120 4, 174 15" stroke="#d97706" stroke-width="2.8" stroke-linecap="round" fill="none"/>
+        </svg>
+      </div>
+    </div>
+  </header>
+
+  <!-- Search & Filter Controls Toolbar -->
+  <div class="recipe-explore-toolbar">
+    <!-- Comprehensive Filter Form (Search + Category + Location) -->
+    <form class="recipe-explore-search" action="/recipes" method="get" role="search" data-recipe-search>
+      {% if recipe_filter != 'all' %}<input type="hidden" name="filter" value="{{ recipe_filter }}">{% endif %}
+
+      <!-- Recipe Keyword Search -->
+      <div class="recipe-search-input-wrap">
+        <button type="submit" class="recipe-search-glass-btn" aria-label="Search recipes" title="Search">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+        </button>
+        <input id="recipes-catalog-search" name="q" type="search" placeholder="Search recipes by name or word..." value="{{ query }}" autocomplete="off" data-recipe-search-input>
+        {% if query %}
+          <a class="recipe-search-clear" href="/recipes{% if location_name or category_slug %}?{% endif %}{% if category_slug %}category={{ category_slug }}{% endif %}{% if category_slug and location_name %}&amp;{% endif %}{% if location_name %}location={{ location_name }}{% endif %}" data-spa-link title="Clear search">✕</a>
+        {% endif %}
+      </div>
+
+      <!-- Category Filter Select -->
+      <div class="recipe-filter-select-wrap">
+        <label for="recipe-category-filter" class="sr-only">Category</label>
+        <select id="recipe-category-filter" name="category" class="recipe-filter-select" data-filter-category onchange="this.form.submit()">
+          <option value="">All Categories</option>
+          {% if new_categories or recommended_categories %}
+            {% if new_categories %}
+            <optgroup label="New Categories Added">
+              {% for cat in new_categories %}
+              <option value="{{ cat.slug }}" {% if category_slug and (category_slug == cat.slug or category_slug == cat.name|lower or category_slug == cat.id|string) %}selected{% endif %}>{{ cat.name }}</option>
+              {% endfor %}
+            </optgroup>
+            {% endif %}
+            {% if recommended_categories %}
+            <optgroup label="More Recommended Categories">
+              {% for cat in recommended_categories %}
+              <option value="{{ cat.slug }}" {% if category_slug and (category_slug == cat.slug or category_slug == cat.name|lower or category_slug == cat.id|string) %}selected{% endif %}>{{ cat.name }}</option>
+              {% endfor %}
+            </optgroup>
+            {% endif %}
+            {% if other_categories %}
+            <optgroup label="Other Categories">
+              {% for cat in other_categories %}
+              <option value="{{ cat.slug }}" {% if category_slug and (category_slug == cat.slug or category_slug == cat.name|lower or category_slug == cat.id|string) %}selected{% endif %}>{{ cat.name }}</option>
+              {% endfor %}
+            </optgroup>
+            {% endif %}
+          {% else %}
+            {% for cat in categories %}
+            <option value="{{ cat.slug }}" {% if category_slug and (category_slug == cat.slug or category_slug == cat.name|lower or category_slug == cat.id|string) %}selected{% endif %}>{{ cat.name }}</option>
+            {% endfor %}
+          {% endif %}
+        </select>
+      </div>
+
+      <!-- Location Filter Select -->
+      <div class="recipe-filter-select-wrap">
+        <label for="recipe-location-filter" class="sr-only">Location</label>
+        <select id="recipe-location-filter" name="location" class="recipe-filter-select" data-filter-location onchange="this.form.submit()">
+          <option value="">All Locations</option>
+          {% for loc in locations %}
+          <option value="{{ loc.name|lower }}" {% if location_name and (location_name == loc.name|lower or location_name == loc.country_code|lower or location_name == loc.id|string) %}selected{% endif %}>{{ loc.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      {% if query or category_slug or location_name %}
+      <a href="/recipes" class="recipe-reset-btn" data-spa-link title="Reset all filters">✕ Reset</a>
+      {% endif %}
+    </form>
+
+    <!-- Right: Sort Dropdown & View Mode Switcher -->
+    <div class="recipe-explore-controls">
+      <div class="recipe-sort-wrapper">
+        <span class="recipe-sort-label">Sort by:</span>
+        <div class="recipe-sort-dropdown" id="recipe-sort-dropdown">
+          <button type="button" class="recipe-sort-trigger" id="recipe-sort-trigger" aria-haspopup="listbox" aria-expanded="false">
+            <span class="recipe-sort-selected">
+              {% if recipe_filter == 'popular' %}Most Popular
+              {% elif recipe_filter == 'rating_high' %}Highest Rated
+              {% elif recipe_filter == 'rating_low' %}Lowest Rated
+              {% elif recipe_filter == 'views' %}Most Viewed
+              {% else %}Newest First{% endif %}
+            </span>
+            <svg class="recipe-sort-chevron" width="14" height="14" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+            </svg>
+          </button>
+          <div class="recipe-sort-menu" id="recipe-sort-menu" role="listbox">
+            <a href="/recipes?filter=newest{% if category_slug %}&amp;category={{ category_slug }}{% endif %}{% if location_name %}&amp;location={{ location_name }}{% endif %}{% if query %}&amp;q={{ query }}{% endif %}" data-spa-link class="recipe-sort-option {% if recipe_filter in ['all', 'newest'] %}is-active{% endif %}">
+              <span class="sort-icon">🕒</span> <span>Newest First</span>
+            </a>
+            <a href="/recipes?filter=popular{% if category_slug %}&amp;category={{ category_slug }}{% endif %}{% if location_name %}&amp;location={{ location_name }}{% endif %}{% if query %}&amp;q={{ query }}{% endif %}" data-spa-link class="recipe-sort-option {% if recipe_filter == 'popular' %}is-active{% endif %}">
+              <span class="sort-icon">⭐</span> <span>Most Popular</span>
+            </a>
+            <a href="/recipes?filter=rating_high{% if category_slug %}&amp;category={{ category_slug }}{% endif %}{% if location_name %}&amp;location={{ location_name }}{% endif %}{% if query %}&amp;q={{ query }}{% endif %}" data-spa-link class="recipe-sort-option {% if recipe_filter == 'rating_high' %}is-active{% endif %}">
+              <span class="sort-icon">★</span> <span>Highest Rated</span>
+            </a>
+            <a href="/recipes?filter=rating_low{% if category_slug %}&amp;category={{ category_slug }}{% endif %}{% if location_name %}&amp;location={{ location_name }}{% endif %}{% if query %}&amp;q={{ query }}{% endif %}" data-spa-link class="recipe-sort-option {% if recipe_filter == 'rating_low' %}is-active{% endif %}">
+              <span class="sort-icon">↓</span> <span>Lowest Rated</span>
+            </a>
+            <a href="/recipes?filter=views{% if category_slug %}&amp;category={{ category_slug }}{% endif %}{% if location_name %}&amp;location={{ location_name }}{% endif %}{% if query %}&amp;q={{ query }}{% endif %}" data-spa-link class="recipe-sort-option {% if recipe_filter == 'views' %}is-active{% endif %}">
+              <span class="sort-icon">👁</span> <span>Most Viewed</span>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- View Switcher (Grid / List) -->
+      <div class="recipe-view-toggle">
+        <button type="button" class="recipe-view-btn is-active" data-view-mode="grid" title="Grid View" aria-label="Grid View">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <rect x="3" y="3" width="7" height="7" rx="1.5"></rect>
+            <rect x="14" y="3" width="7" height="7" rx="1.5"></rect>
+            <rect x="3" y="14" width="7" height="7" rx="1.5"></rect>
+            <rect x="14" y="14" width="7" height="7" rx="1.5"></rect>
+          </svg>
+        </button>
+        <button type="button" class="recipe-view-btn" data-view-mode="list" title="List View" aria-label="List View">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+            <line x1="4" y1="6" x2="20" y2="6"></line>
+            <line x1="4" y1="12" x2="20" y2="12"></line>
+            <line x1="4" y1="18" x2="20" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Active Filter Banners (preserves integration test expectations) -->
+  {% if query %}
+  <div class="category-filter-banner" aria-live="polite">
+    <div><p class="eyebrow">Keyword Search</p><h2>Recipes matching “{{ query }}”</h2></div>
+    <a href="/recipes{% if location_name or category_slug %}?{% endif %}{% if category_slug %}category={{ category_slug }}{% endif %}{% if category_slug and location_name %}&amp;{% endif %}{% if location_name %}location={{ location_name }}{% endif %}" data-spa-link>Clear keyword filter</a>
+  </div>
+  {% endif %}
+
+  {% set selected_category = categories|selectattr('slug', 'equalto', category_slug)|first %}
+  {% if selected_category or category_slug %}
+  <div class="category-filter-banner" aria-live="polite">
+    <div><p class="eyebrow">Category</p><h2>{{ selected_category.name if selected_category else category_slug|title }}</h2></div>
+    <a href="/recipes{% if location_name or query %}?{% endif %}{% if location_name %}location={{ location_name }}{% endif %}{% if location_name and query %}&amp;{% endif %}{% if query %}q={{ query }}{% endif %}" data-spa-link>Show all categories</a>
+  </div>
+  {% endif %}
+
+  {% if location_name %}
+  <div class="category-filter-banner" aria-live="polite">
+    <div><p class="eyebrow">Location</p><h2>{{ location_name|title }}</h2></div>
+    <a href="/recipes{% if category_slug or query %}?{% endif %}{% if category_slug %}category={{ category_slug }}{% endif %}{% if category_slug and query %}&amp;{% endif %}{% if query %}q={{ query }}{% endif %}" data-spa-link>Show all locations</a>
+  </div>
+  {% endif %}
+
+  <!-- 4-Column Recipe Cards Grid -->
+  <div class="recipe-explore-grid" id="recipe-explore-grid">
+    {% for recipe in recipes %}
+    <article class="recipe-card-explore" data-recipe-card data-slug="{{ recipe.slug }}" data-title="{{ recipe.title|lower }}" data-location="{{ (recipe.location_name or '')|lower }}" data-category="{{ (recipe.category_name or '')|lower }}">
+      <!-- Image Thumbnail with Overlays -->
+      <div class="recipe-card-explore__thumb">
+        {% set r_img = recipe.image_path or recipe.image_url or recipe.storage_path or 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=800&q=80' %}
+        {% if r_img and r_img.lower().endswith(('.mp4', '.webm', '.mov', '.ogg', '.ogv', '.m4v')) %}
+          <video src="{{ r_img }}" muted loop playsinline preload="metadata" class="recipe-card-explore__img"></video>
+        {% else %}
+          <img src="{{ r_img }}" alt="{{ recipe.title }}" loading="lazy" class="recipe-card-explore__img">
+        {% endif %}
+
+        <!-- Top-Left Overlay Pill Badge (Clickable Filter by Location / Category) -->
+        {% if recipe.location_name and (recipe.badge_text == recipe.location_name) %}
+        <a href="/recipes?location={{ recipe.location_name|lower }}" data-spa-link class="recipe-card-explore__badge" title="Filter by {{ recipe.location_name }}">
+          {% if recipe.badge_icon %}<span class="badge-icon">{{ recipe.badge_icon }}</span>{% endif %}
+          <span class="badge-label">{{ recipe.badge_text }}</span>
+        </a>
+        {% elif recipe.category_slug %}
+        <a href="/recipes?category={{ recipe.category_slug }}" data-spa-link class="recipe-card-explore__badge" title="Filter by {{ recipe.category_name }}">
+          {% if recipe.badge_icon %}<span class="badge-icon">{{ recipe.badge_icon }}</span>{% endif %}
+          <span class="badge-label">{{ recipe.badge_text or recipe.category_name or 'Recipe' }}</span>
+        </a>
+        {% else %}
+        <div class="recipe-card-explore__badge">
+          {% if recipe.badge_icon %}<span class="badge-icon">{{ recipe.badge_icon }}</span>{% endif %}
+          <span class="badge-label">{{ recipe.badge_text or recipe.location_name or recipe.category_name or 'Recipe' }}</span>
+        </div>
+        {% endif %}
+
+        <!-- Top-Right Heart Save Button -->
+        <button class="recipe-card-explore__heart" type="button" data-action="like" data-slug="{{ recipe.slug }}" aria-label="Save {{ recipe.title }}">
+          <svg class="heart-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Card Body -->
+      <div class="recipe-card-explore__body">
+        <!-- Rating & Cook Time Row -->
+        <div class="recipe-card-explore__meta">
+          <div class="recipe-card-explore__rating">
+            <span class="star-icon">★</span>
+            <strong>{{ recipe.average_rating_display or "4.8" }}</strong>
+            <span class="review-count">({{ recipe.review_count_formatted or "2.1k reviews" }})</span>
+          </div>
+          <div class="recipe-card-explore__time">
+            <span class="clock-icon">🕒</span>
+            <span>{{ recipe.display_time or "30 mins" }}</span>
+          </div>
+        </div>
+
+        <!-- Title -->
+        <h3 class="recipe-card-explore__title">
+          <a href="/recipes/{{ recipe.slug }}" data-spa-link>{{ recipe.title }}</a>
+        </h3>
+
+        <!-- Footer: Author & View Recipe Button -->
+        <div class="recipe-card-explore__footer">
+          <div class="recipe-card-explore__author">
+            {% if recipe.author_avatar %}
+              <img src="{{ recipe.author_avatar }}" alt="{{ recipe.author_name }}" class="author-avatar" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+              <span class="author-avatar-fallback" style="display: none;">{{ (recipe.author_name or 'C')[0]|upper }}</span>
+            {% else %}
+              <span class="author-avatar-fallback">{{ (recipe.author_name or 'C')[0]|upper }}</span>
+            {% endif %}
+            <span class="author-name">{{ recipe.author_name or 'chef' }}</span>
+          </div>
+
+          <a href="/recipes/{{ recipe.slug }}" class="recipe-card-explore__btn" data-spa-link>
+            View Recipe <span class="arrow">→</span>
+          </a>
+        </div>
+      </div>
+    </article>
+    {% else %}
+      {% if query %}
+      <div class="ui-empty-state recipe-catalog__empty">
+        <div class="ui-empty-state__icon" aria-hidden="true">⌕</div>
+        <h2>No recipes found matching “{{ query }}”</h2>
+        <p>Try searching for a different recipe name or keyword.</p>
+        <a class="ui-button ui-button--primary" href="/recipes" data-spa-link>View all recipes</a>
+      </div>
+      {% else %}
+      <div class="ui-empty-state recipe-catalog__empty">
+        <h2>No published recipes yet</h2>
+        <p>Recipes shared by the community will appear here.</p>
+      </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+  <div class="ui-empty-state recipe-catalog__empty" id="recipe-live-empty-state" hidden>
+    <div class="ui-empty-state__icon" aria-hidden="true">⌕</div>
+    <h2 data-live-empty-title>No recipes found matching your keyword</h2>
+    <p>Try searching for a different recipe name or word.</p>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,6 @@
+<div class="ui-empty-state">
+  <div class="ui-empty-state__icon" aria-hidden="true">{{ empty_icon|default('⌕') }}</div>
+  <h2>{{ empty_title|default('No recipes found') }}</h2>
+  <p>{{ empty_message|default('Try another search or check back as the community adds new recipes.') }}</p>
+  {% if empty_action_href %}<a class="ui-button ui-button--primary" href="{{ empty_action_href }}" data-spa-link>{{ empty_action_label|default('Explore home') }}</a>{% endif %}
+</div>

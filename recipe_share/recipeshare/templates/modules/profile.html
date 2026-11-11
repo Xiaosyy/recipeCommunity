@@ -1,0 +1,125 @@
+{% if not spa_fragment|default(false) %}{% extends 'layouts/app.html' %}{% endif %}
+{% block title %}{% if not spa_fragment|default(false) %}Profile — RecipeShare{% endif %}{% endblock %}
+{% block content %}
+<section class="profile-page">
+  <nav class="profile-breadcrumb" aria-label="Breadcrumb"><span aria-hidden="true">⌂</span> Home <b>/</b> Profile</nav>
+
+  <header class="profile-hero">
+    <div class="profile-cover" aria-hidden="true"></div>
+    <div class="profile-identity">
+      <div class="profile-photo">
+        {% if profile.avatar_path %}<img src="{{ profile.avatar_path }}" alt="{{ profile.display_name }}">{% else %}<span>{{ profile.display_name[:1]|upper }}</span>{% endif %}
+      </div>
+      <div class="profile-details">
+        <h1>{{ profile.display_name }} <span class="verified-badge" title="Verified account">✓</span></h1>
+        <p class="profile-role">{{ profile.role|title }}</p>
+        <p>{{ profile.bio or 'Sharing delicious recipes with the RecipeShare community.' }}</p>
+        {% if profile.location_name %}<p class="profile-location">⌖ {{ profile.location_name }}</p>{% endif %}
+        <div class="profile-stats">
+          <a class="profile-stat-link" href="{{ '/my-recipes' if is_owner|default(true) else '/users/' ~ profile.username }}" data-spa-link title="View recipes">
+            <strong data-profile-stat="recipes">{{ recipe_count }}</strong>
+            <span>Recipes</span>
+          </a>
+          <a class="profile-stat-link" href="{{ '/followers' if is_owner|default(true) else '/users/' ~ profile.username ~ '/followers' }}" data-spa-link title="View followers">
+            <strong data-profile-stat="members">{{ '%0.1fk'|format(follower_count / 1000) if follower_count >= 1000 else follower_count }}</strong>
+            <span>Followers</span>
+          </a>
+          <a class="profile-stat-link" href="{{ '/following' if is_owner|default(true) else '/users/' ~ profile.username ~ '/following' }}" data-spa-link title="View following">
+            <strong data-profile-stat="following">{{ '%0.1fk'|format(following_count / 1000) if following_count >= 1000 else following_count }}</strong>
+            <span>Following</span>
+          </a>
+          <a class="profile-stat-link" href="{{ '/likes' if is_owner|default(true) else '/users/' ~ profile.username ~ '/likes' }}" data-spa-link title="View liked recipes">
+            <strong data-profile-stat="likes">{{ '%0.1fk'|format(like_count / 1000) if like_count >= 1000 else like_count }}</strong>
+            <span>Likes</span>
+          </a>
+        </div>
+      </div>
+      {% if is_owner|default(true) %}
+      <a class="profile-edit-button" href="/settings" data-spa-link>✎ Edit Profile</a>
+      {% else %}
+      <button type="button" class="profile-follow-action {% if is_following %}is-active{% endif %}" data-user-id="{{ profile.id }}">
+        {{ 'Following' if is_following else 'Follow' }}
+      </button>
+      {% endif %}
+    </div>
+  </header>
+
+  <nav class="profile-tabs" aria-label="Profile sections">
+    <a class="is-active" href="{{ '/users/me' if is_owner|default(true) else '/users/' ~ profile.username }}" data-spa-link>♙ <span>Profile</span></a>
+    <a href="{{ '/followers' if is_owner|default(true) else '/users/' ~ profile.username ~ '/followers' }}" data-spa-link>♣ <span>Followers</span> <small class="tab-badge" data-profile-badge="followers">{{ follower_count }}</small></a>
+    <a href="{{ '/following' if is_owner|default(true) else '/users/' ~ profile.username ~ '/following' }}" data-spa-link>⚑ <span>Following</span> <small class="tab-badge" data-profile-badge="following">{{ following_count }}</small></a>
+    <a href="{{ '/likes' if is_owner|default(true) else '/users/' ~ profile.username ~ '/likes' }}" data-spa-link>♥ <span>Likes</span> <small class="tab-badge" data-profile-badge="likes">{{ like_count }}</small></a>
+    {% if is_owner|default(true) %}
+    <a href="/my-posts" data-spa-link>▤ <span>My Posts</span></a>
+    <a href="/my-recipes" data-spa-link>♨ <span>My Recipes</span></a>
+    <a href="/drafts" data-spa-link>✎ <span>Drafts</span>{% if draft_count|default(0) > 0 %}<small class="tab-badge tab-badge--draft">{{ draft_count }}</small>{% endif %}</a>
+    <a href="/favorites" data-spa-link>♡ <span>Saved</span></a>
+    <a href="/settings" data-spa-link>⚙ <span>Settings</span></a>
+    {% endif %}
+  </nav>
+
+  <div class="profile-content-grid">
+    <main class="profile-main-column">
+      {% if is_owner|default(true) and draft_count|default(0) > 0 %}
+      <section class="profile-panel profile-drafts-panel">
+        <div class="profile-panel-heading">
+          <h2>✎ My Drafts <small class="tab-badge tab-badge--draft">{{ draft_count }} unfinished</small></h2>
+          <a href="/drafts" data-spa-link>View All Drafts →</a>
+        </div>
+        <div class="profile-recipe-grid">
+          {% for draft in draft_recipes_preview|default([]) %}
+          <a href="/recipes/{{ draft.slug }}/edit" class="profile-recipe-card profile-draft-card" data-spa-link title="Edit draft: {{ draft.title }}">
+            {% if draft.image_path %}
+            <div style="background-image:url('{{ draft.image_path }}')"><span class="profile-draft-chip">✎ Draft</span></div>
+            {% else %}
+            <div class="profile-recipe-placeholder">✎<span class="profile-draft-chip">✎ Draft</span></div>
+            {% endif %}
+            <strong>{{ draft.title }}</strong>
+            <small class="profile-draft-edit-hint">✎ Resume editing →</small>
+          </a>
+          {% endfor %}
+        </div>
+      </section>
+      {% endif %}
+
+      <section class="profile-panel about-panel">
+        <div class="profile-panel-heading"><h2>About {{ 'Me' if is_owner|default(true) else profile.display_name }}</h2>{% if is_owner|default(true) %}<a href="/settings" data-spa-link>✎ Edit</a>{% endif %}</div>
+        <p>{{ profile.bio or 'I enjoy sharing delicious recipes and cooking for the people I love.' }}</p>
+        {% if profile.location_name %}<p class="profile-contact">⌖ {{ profile.location_name }}</p>{% endif %}
+        {% if profile.email and is_owner|default(true) %}<p class="profile-contact">@ {{ profile.email }}</p>{% endif %}
+        <p class="profile-contact">▣ Joined {{ profile.created_at.strftime('%b %d, %Y') if profile.created_at else 'recently' }}</p>
+      </section>
+
+      <section class="profile-panel profile-recipes-panel">
+        <div class="profile-panel-heading"><h2>♨ {{ 'My Recipes' if is_owner|default(true) else 'Recipes by ' ~ profile.display_name }}</h2>{% if is_owner|default(true) %}<a href="/my-recipes" data-spa-link>View All →</a>{% endif %}</div>
+        <div class="profile-recipe-grid">
+          {% for recipe in recipes[:5] %}<a href="/recipes/{{ recipe.slug }}" class="profile-recipe-card" data-spa-link>{% if recipe.image_path %}<div style="background-image:url('{{ recipe.image_path }}')"></div>{% else %}<div class="profile-recipe-placeholder">♨</div>{% endif %}<strong>{{ recipe.title }}</strong></a>{% else %}<p class="profile-empty">No published recipes yet.</p>{% endfor %}
+        </div>
+      </section>
+
+    </main>
+
+    <aside class="profile-right-column">
+      <section class="profile-panel profile-stats-panel">
+        <div class="profile-panel-heading"><h2>🌿 Chef Stats</h2>{% if is_owner|default(true) %}<a href="/settings" data-spa-link>View Details →</a>{% endif %}</div>
+        <div class="profile-stat-cards">
+          <div><span>♨</span><strong data-profile-stat="recipes">{{ recipe_count }}</strong><small>Recipes</small></div>
+          <div><span>♣</span><strong data-profile-stat="members">{{ follower_count }}</strong><small>Followers</small></div>
+          <div><span>♥</span><strong data-profile-stat="likes">{{ like_count }}</strong><small>Likes</small></div>
+        </div>
+      </section>
+      {% if is_owner|default(true) %}
+      <section class="profile-create-actions" aria-label="Create profile content">
+        <a href="/recipes/create" data-spa-link>♨ <span>Create Recipe</span></a>
+      </section>
+      {% endif %}
+      <section class="profile-activity-panel">
+      <h2>◷ Recent Activity</h2>
+      {% if recipes %}
+        {% for recipe in recipes[:4] %}<article><span class="activity-thumb"{% if recipe.image_path %} style="background-image:url('{{ recipe.image_path }}')"{% endif %}></span><div><strong>{{ recipe.title }}</strong><small>Published recipe</small></div></article>{% endfor %}
+      {% else %}<p class="profile-empty">Activity will appear here.</p>{% endif %}
+      </section>
+    </aside>
+  </div>
+</section>
+{% endblock %}

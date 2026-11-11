@@ -1,0 +1,4 @@
+<section class="discovery-section recipe-discovery">
+  {% set eyebrow='Community favorites' %}{% set title='Featured Recipes' %}{% set description='' %}{% set link_href='/recipes' %}{% set link_label='Browse recipes' %}{% include 'components/section-header.html' %}
+  {% if featured_recipes %}{% set recipes=featured_recipes %}{% include 'components/recipe-grid.html' %}{% else %}{% set empty_icon='♡' %}{% set empty_title='No featured recipes yet' %}{% set empty_message='Published community recipes will appear here.' %}{% set empty_action_href='/login' if not session.get('user_id') else '/recipes/create' %}{% set empty_action_label='Share a recipe' %}{% include 'components/empty-state.html' %}{% endif %}
+</section>

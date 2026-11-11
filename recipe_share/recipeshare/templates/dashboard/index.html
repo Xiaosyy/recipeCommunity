@@ -1,0 +1,121 @@
+{% if not spa_fragment|default(false) %}{% extends 'layouts/app.html' %}{% endif %}
+{% block title %}{% if not spa_fragment|default(false) %}Recipe Inventory — RecipeShare{% endif %}{% endblock %}
+{% block content %}
+<div class="dashboard-page">
+  {% include 'partials/flash_messages.html' %}
+  <section class="dashboard-title-card">
+    <div class="dashboard-title-icon">▥</div>
+    <div>
+      <h1>Recipe Inventory</h1>
+      <p>Discover what's trending in our community with live real-time statistics!</p>
+    </div>
+  </section>
+
+  <section class="dashboard-metrics" aria-label="Recipe inventory metrics" data-dashboard-metrics>
+    {% set metric_items = [
+      ('◉', metrics.total_views|default(0), 'Total Views', metrics.weekly_views|default(0), 'views this week', 'total_views'),
+      ('♡', metrics.total_likes|default(0), 'Total Likes', metrics.weekly_likes|default(0), 'likes this week', 'total_likes'),
+      ('♨', metrics.recipe_count|default(0), 'Total Recipes', metrics.weekly_recipes|default(0), 'added this week', 'recipe_count'),
+      ('✦', metrics.active_chefs|default(0), 'Active Chefs', '', 'contributing chefs', 'active_chefs')
+    ] %}
+    {% for icon, value, label, change, context, key in metric_items %}
+      <article class="dashboard-metric-card">
+        <div class="metric-icon metric-icon--{{ loop.index }}">{{ icon }}</div>
+        <div>
+          <span>{{ label }}</span>
+          <strong data-metric-key="{{ key }}">{{ '{:,}'.format(value) }}</strong>
+          {% if change %}<small class="metric-change" data-metric-trend="{{ key }}">↑ {{ change }}</small>{% endif %}
+          <em>{{ context }}</em>
+        </div>
+      </article>
+    {% endfor %}
+  </section>
+
+  <section class="dashboard-charts">
+    {% set chart_configs = [
+      ('Most Viewed Recipes', 'view_count', chart_views|default(chart_recipes|default([]))),
+      ('Most Liked Recipes', 'like_count', chart_likes|default([]))
+    ] %}
+    {% for chart_title, chart_field, chart_list in chart_configs %}
+      <article class="dashboard-panel chart-panel" data-chart-panel="{{ chart_field }}">
+        <div class="dashboard-panel-heading">
+          <h2>{% if loop.first %}◉{% else %}♡{% endif %} {{ chart_title }}</h2>
+          <select class="ui-select compact-select" data-chart-period data-target="{{ chart_field }}">
+            <option value="all" selected>All Time</option>
+            <option value="month">This Month</option>
+            <option value="week">This Week</option>
+          </select>
+        </div>
+        <div class="dashboard-bar-chart {% if chart_field == 'like_count' %}dashboard-bar-chart--likes{% endif %}" role="img" aria-label="{{ chart_title }} bar chart" data-chart-container="{{ chart_field }}">
+          {% set highest = namespace(value=1) %}
+          {% for recipe in chart_list %}
+            {% set score = recipe.view_count if chart_field == 'view_count' else recipe.like_count %}
+            {% if score > highest.value %}{% set highest.value = score %}{% endif %}
+          {% endfor %}
+          {% for recipe in chart_list %}
+            {% set score = recipe.view_count if chart_field == 'view_count' else recipe.like_count %}
+            <div class="chart-column">
+              <strong>{{ recipe.display_score|default(score) }}</strong>
+              <div class="chart-bar-wrap">
+                <div class="chart-bar" style="height: {{ ((15 + (score / highest.value * 80))|round) if score > 0 else 4 }}%"></div>
+              </div>
+              <small>{{ recipe.title.split()[0] }}<br>{{ recipe.title.split()[1:]|join(' ') }}</small>
+            </div>
+          {% else %}
+            <p class="chart-empty">No recipes recorded yet for this view.</p>
+          {% endfor %}
+        </div>
+      </article>
+    {% endfor %}
+  </section>
+
+  <aside class="dashboard-right-rail">
+    {% for ranking in [('◉ Top Recipes by Views', top_views, 'view_count'), ('♡ Top Recipes by Likes', top_likes, 'like_count'), ('★ Top Recipes by Rating', top_rated, 'rating')] %}
+      <section class="dashboard-side-panel">
+        <div class="dashboard-panel-heading"><h2>{{ ranking[0] }}</h2><a href="/recipes" data-spa-link>View All</a></div>
+        <div class="dashboard-ranking-list" data-ranking-container="{{ ranking[2] }}">
+        {% for recipe in ranking[1] %}<a class="dashboard-ranking" href="/recipes/{{ recipe.slug }}" data-spa-link><strong class="ranking-place ranking-place--{{ loop.index }}">{{ loop.index }}</strong><div class="ranking-image"{% if recipe.image_path %} style="background-image:url('{{ recipe.image_path }}')"{% endif %}></div><div><b>{{ recipe.title }}</b><small>by {{ recipe.author_name or 'Community Chef' }}</small></div><span class="ranking-stat">{% if ranking[2] == 'view_count' %}◉ {{ '{:,}'.format(recipe.view_count) }}{% elif ranking[2] == 'like_count' %}♡ {{ recipe.like_count }}{% else %}★ {{ '%.1f'|format(recipe.average_rating or 0) }}{% endif %}</span></a>{% endfor %}
+        </div>
+      </section>
+    {% endfor %}
+  </aside>
+  <section class="dashboard-inventory">
+    <div class="inventory-toolbar">
+      <div class="inventory-tabs"><button class="is-active" type="button" data-inventory-tab="all">⌂ All Recipes</button><button type="button" data-inventory-tab="views">◉ Most Viewed</button><button type="button" data-inventory-tab="likes">♡ Most Liked</button><button type="button" data-inventory-tab="latest">◷ Latest</button></div>
+      <label class="inventory-search"><span class="sr-only">Search recipes</span><input type="search" placeholder="Search recipes..."><span>⌕</span></label>
+      {% set category_list = all_categories or categories or [] %}
+      {% if not category_list %}
+        {% for recipe in inventory %}{% if recipe.category_name and recipe.category_name not in category_list %}{% set _ = category_list.append(recipe.category_name) %}{% endif %}{% endfor %}
+      {% endif %}
+      <select class="ui-select inventory-category" aria-label="Filter by Category">
+        <option value="">All Categories</option>
+        {% for cat_name in category_list|sort %}
+          <option value="{{ cat_name }}">{{ cat_name }}</option>
+        {% endfor %}
+      </select>
+      {% set location_list = all_locations or locations or [] %}
+      {% if not location_list %}
+        {% for recipe in inventory %}{% if recipe.location_name and recipe.location_name not in location_list %}{% set _ = location_list.append(recipe.location_name) %}{% endif %}{% endfor %}
+      {% endif %}
+      <select class="ui-select inventory-location" aria-label="Filter by Location">
+        <option value="">⌖ Filter by Location</option>
+        {% for loc_name in location_list %}
+          <option value="{{ loc_name }}">{{ loc_name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="dashboard-recipe-grid">
+      {% for recipe in inventory %}
+        <article class="dashboard-recipe-card ui-card" data-inventory-card data-index="{{ loop.index }}" data-latest="{{ recipe.id }}" data-slug="{{ recipe.slug }}" data-title="{{ recipe.title|lower }}" data-category="{{ recipe.category_name or '' }}" data-location="{{ recipe.location_name or '' }}" data-views="{{ recipe.view_count }}" data-likes="{{ recipe.like_count }}">
+          <a href="/recipes/{{ recipe.slug }}" data-spa-link>
+            <div class="dashboard-recipe-image"{% if recipe.image_path %} style="background-image:url('{{ recipe.image_path }}')"{% endif %}><span class="recipe-location">⌖ {{ recipe.location_name or 'Community' }}</span><span class="recipe-save" data-save-recipe="{{ recipe.slug }}" role="button" tabindex="0" aria-label="Save {{ recipe.title }}">♡</span></div>
+            <div class="dashboard-recipe-body"><h3>{{ recipe.title }}</h3><p>by {{ recipe.author_name or 'Community Chef' }}</p><div class="dashboard-recipe-meta"><strong data-recipe-rating>★ {{ '%.1f'|format(recipe.average_rating or 0) }} <small>({{ recipe.review_count }})</small></strong><span data-recipe-views>◉ {{ '{:,}'.format(recipe.view_count) }}</span><b data-recipe-likes>♡ {{ recipe.like_count }}</b></div><div class="recipe-tags"><span>{{ recipe.category_name or 'Recipe' }}</span></div></div>
+          </a>
+        </article>
+      {% else %}
+        {% include 'dashboard/partials/empty_dashboard.html' %}
+      {% endfor %}
+    </div>
+  </section>
+</div>
+{% endblock %}

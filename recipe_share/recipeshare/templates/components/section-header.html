@@ -1,0 +1,4 @@
+<header class="ui-section-header">
+  <div><p class="eyebrow">{{ eyebrow }}</p><h2>{{ title }}</h2>{% if description %}<p>{{ description }}</p>{% endif %}</div>
+  {% if link_href and link_label %}<a class="section-header-link" href="{{ link_href }}"{% if link_spa|default(true) %} data-spa-link{% endif %}>{{ link_label }} →</a>{% endif %}
+</header>

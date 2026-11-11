@@ -1,0 +1,35 @@
+@media (max-width: 1200px) {
+  .dashboard-page { grid-template-columns: minmax(0, 1fr) 260px; }
+  .dashboard-recipe-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .inventory-toolbar { grid-template-columns: 1fr 1fr; }
+  .inventory-tabs { grid-column: 1 / -1; }
+}
+
+@media (max-width: 900px) {
+  .app-main { left: 0 !important; }
+  .dashboard-page { grid-template-columns: minmax(0, 1fr); }
+  .dashboard-right-rail { grid-column: 1; grid-row: auto; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .dashboard-title-card, .dashboard-metrics, .dashboard-charts, .dashboard-inventory { grid-column: 1; }
+  .dashboard-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .dashboard-charts { grid-template-columns: minmax(0, 1fr); }
+  .dashboard-recipe-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+@media (max-width: 640px) {
+  .app-shell .app-main { padding: 12px 10px 24px !important; }
+  .dashboard-title-card { height: auto; min-height: 78px; }
+  .dashboard-title-card h1 { font-size: 1.35rem; }
+  .dashboard-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .dashboard-metric-card { height: auto; min-height: 96px; }
+  .dashboard-right-rail { grid-template-columns: minmax(0, 1fr); }
+  .inventory-toolbar { grid-template-columns: minmax(0, 1fr); }
+  .inventory-tabs { grid-column: auto; width: 100%; overflow-x: auto; }
+  .inventory-tabs button { flex: 0 0 auto; }
+  .inventory-search, .inventory-category, .inventory-location { width: 100%; }
+  .dashboard-recipe-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 420px) {
+  .dashboard-metrics, .dashboard-recipe-grid { grid-template-columns: minmax(0, 1fr); }
+  .dashboard-metric-card { width: 100%; }
+}

@@ -1,0 +1,71 @@
+{% if not spa_fragment|default(false) %}{% extends 'layouts/' ~ (layout|default('public')) ~ '.html' %}{% endif %}
+{% block title %}{% if not spa_fragment|default(false) %}Categories — RecipeShare{% endif %}{% endblock %}
+{% block content %}
+<section class="module-page category-showcase-page">
+  <header class="category-showcase-header">
+    <p class="category-showcase-eyebrow">BROWSE BY FLAVOR</p>
+    <h1 class="category-showcase-heading">Recipe Categories</h1>
+    <p class="category-showcase-subtitle">Find something delicious for every craving, diet, and occasion.</p>
+  </header>
+
+  {% if new_categories %}
+  <!-- Section 1: New Categories Added -->
+  <section class="category-section" aria-label="New categories added">
+    <div class="category-section-header">
+      <h2 class="category-section-title">
+        <span class="category-section-badge">✨ Newly Added</span>
+        New Categories Added
+      </h2>
+      <p class="category-section-sub">Recently introduced recipe categories curated for your kitchen.</p>
+    </div>
+    <div class="category-showcase-grid" aria-label="New categories">
+      {% for category in new_categories %}
+      <a class="category-showcase-card" href="/recipes?category={{ category.slug }}" data-spa-link title="Browse {{ category.name }} recipes">
+        <span class="category-number-badge" aria-label="Category {{ loop.index }}">{{ loop.index }}</span>
+        <img class="category-showcase-card__img" src="{{ category.image_url or 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=800&q=80' }}" alt="{{ category.name }}" loading="lazy">
+        <div class="category-showcase-card__overlay"></div>
+        <span class="category-showcase-card__title">{{ loop.index }}. {{ category.name }}</span>
+      </a>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  {% if recommended_categories %}
+  <!-- Section 2: More Recommended Categories -->
+  <section class="category-section" aria-label="More recommended categories" style="margin-top: 2.75rem;">
+    <div class="category-section-header">
+      <h2 class="category-section-title">
+        <span class="category-section-badge" style="background: #fef3c7; color: #92400e;">★ Recommended</span>
+        More Recommended Categories
+      </h2>
+      <p class="category-section-sub">Beloved comfort dishes, dietary preferences, and regional culinary favorites.</p>
+    </div>
+    <div class="category-showcase-grid" aria-label="More recommended categories">
+      {% for category in recommended_categories %}
+      <a class="category-showcase-card" href="/recipes?category={{ category.slug }}" data-spa-link title="Browse {{ category.name }} recipes">
+        <img class="category-showcase-card__img" src="{{ category.image_url or 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=800&q=80' }}" alt="{{ category.name }}" loading="lazy">
+        <div class="category-showcase-card__overlay"></div>
+        <span class="category-showcase-card__title">{{ category.name }}</span>
+      </a>
+      {% endfor %}
+    </div>
+  </section>
+  {% elif categories and not new_categories %}
+  <div class="category-showcase-grid" aria-label="Recipe categories">
+    {% for category in categories %}
+    <a class="category-showcase-card" href="/recipes?category={{ category.slug }}" data-spa-link title="Browse {{ category.name }} recipes">
+      <img class="category-showcase-card__img" src="{{ category.image_url or 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=800&q=80' }}" alt="{{ category.name }}" loading="lazy">
+      <div class="category-showcase-card__overlay"></div>
+      <span class="category-showcase-card__title">{{ category.name }}</span>
+    </a>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="ui-empty-state">
+    <h2>No categories yet</h2>
+    <p>Categories will appear once they are added.</p>
+  </div>
+  {% endif %}
+</section>
+{% endblock %}

@@ -1,0 +1,387 @@
+{% if not spa_fragment|default(false) %}{% extends 'layouts/app.html' %}{% endif %}
+{% set is_edit = edit_mode|default(false) and recipe is not none %}
+{% block title %}{% if not spa_fragment|default(false) %}{{ ('Edit ' ~ recipe.title) if is_edit else 'Create Recipe' }} — RecipeShare{% endif %}{% endblock %}
+{% block content %}
+<main class="recipe-create-page" data-recipe-create>
+  <!-- Top Header Banner -->
+  <header class="recipe-create-banner">
+    <div class="recipe-create-banner__left">
+      <div class="recipe-create-banner__icon" aria-hidden="true">
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M6 13.87A4 4 0 0 1 7.41 6a5.11 5.11 0 0 1 1.05-1.54 5 5 0 0 1 7.08 0A5.11 5.11 0 0 1 16.59 6 4 4 0 0 1 18 13.87V21H6Z"/>
+          <line x1="6" y1="17" x2="18" y2="17"/>
+        </svg>
+      </div>
+      <div>
+        <h1>{{ 'Edit Recipe' if is_edit else 'Create Recipe' }}</h1>
+        <p>{{ 'Update your recipe details, ingredients, and cooking steps.' if is_edit else 'Share your recipe with the RecipeShare community.' }}</p>
+      </div>
+      <svg class="recipe-create-banner__sprig" width="76" height="64" viewBox="0 0 80 70" fill="none" aria-hidden="true">
+        <path d="M22 62 C34 44, 46 26, 62 10" stroke="#9ec089" stroke-width="2" stroke-linecap="round"/>
+        <path d="M40 36 C32 26, 26 16, 28 6 C38 12, 42 24, 40 36 Z" fill="#b4d19e" opacity="0.75"/>
+        <path d="M48 26 C56 18, 66 16, 74 20 C66 28, 56 30, 48 26 Z" fill="#a3c58b" opacity="0.75"/>
+        <path d="M32 48 C44 42, 56 44, 64 52 C52 56, 40 54, 32 48 Z" fill="#b4d19e" opacity="0.75"/>
+      </svg>
+    </div>
+    {% if is_edit %}
+    <a class="recipe-back-link" href="/recipes/{{ recipe.slug }}" data-spa-link>← Back to recipe</a>
+    {% else %}
+    <a class="recipe-back-link" href="/users/me" data-spa-link>← Back to profile</a>
+    {% endif %}
+  </header>
+  {% include 'partials/flash_messages.html' %}
+
+  {% set has_existing_video = is_edit and (recipe.video_path or (recipe.image_path and recipe.image_path.lower().endswith(('.mp4', '.webm', '.mov', '.ogg', '.ogv', '.m4v')))) %}
+  {% set has_existing_image = is_edit and recipe.image_path and not has_existing_video %}
+
+  <form method="post" action="{{ url_for('home.update_recipe', slug=recipe.slug) if is_edit else url_for('home.save_recipe') }}" enctype="multipart/form-data" class="recipe-create-form">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="hidden" name="status" value="{{ recipe.status if is_edit and recipe.status else 'draft' }}" data-recipe-status-input>
+
+    <section class="recipe-create-grid">
+      <!-- Left Main Card -->
+      <div class="recipe-create-main">
+        <section class="recipe-editor-card recipe-main-card">
+          <!-- Single Full-Width Upload Box -->
+          <div class="recipe-media-upload-area">
+            <label class="recipe-cover-upload" for="recipe_image" data-recipe-dropzone>
+              <img data-recipe-image-preview alt="Recipe preview" {% if has_existing_image %}src="{{ recipe.image_path }}"{% else %}hidden{% endif %}>
+              <video data-recipe-video-preview controls playsinline preload="metadata" {% if has_existing_video %}src="{{ recipe.video_path or recipe.image_path }}"{% else %}hidden{% endif %}></video>
+              <span class="recipe-upload-placeholder" data-recipe-upload-placeholder {% if has_existing_image or has_existing_video %}hidden{% endif %}>
+                <b class="recipe-upload-plus">＋</b>
+                <strong>{{ 'Change Recipe Photo' if is_edit else 'Add Recipe Photo' }}</strong>
+                <small>PNG, JPG, JPEG or WEBP · up to 5 MB</small>
+                <span class="visually-hidden">Upload Photo · Upload Video</span>
+              </span>
+              <button type="button" class="recipe-media-remove-btn" data-recipe-upload-clear title="Remove media" aria-label="Remove uploaded media" {% if not (has_existing_image or has_existing_video) %}hidden{% endif %}>×</button>
+            </label>
+            <input class="visually-hidden" id="recipe_image" name="recipe_image" type="file" accept="image/png,image/jpeg,image/webp,image/gif,video/mp4,video/webm,video/quicktime,video/ogg">
+            <input class="visually-hidden" id="recipe_video" name="recipe_video" type="file" accept="video/mp4,video/webm,video/quicktime,video/ogg">
+          </div>
+
+          <!-- Recipe Title & Short Description -->
+          <div class="recipe-title-fields">
+            <label class="recipe-field-label">
+              <span class="recipe-field-label__text">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#146348" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/>
+                  <path d="M7 2v20"/>
+                  <path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/>
+                </svg>
+                <span>Recipe title <em class="required-star">*</em></span>
+              </span>
+              <input name="title" required minlength="3" maxlength="160" placeholder="e.g. Creamy Chicken Pasta" value="{{ recipe.title if is_edit else '' }}" data-recipe-title>
+            </label>
+
+            <label class="recipe-field-label">
+              <span class="recipe-field-label__text">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#146348" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                <span>Short description <em class="required-star">*</em></span>
+              </span>
+              <div class="recipe-textarea-wrap">
+                <textarea name="description" maxlength="2000" rows="3" placeholder="Tell the community what makes this recipe special..." data-recipe-description>{{ recipe.description if is_edit and recipe.description else '' }}</textarea>
+                <small class="recipe-char-counter" data-desc-counter>{{ (recipe.description|length) if is_edit and recipe.description else 0 }}/200</small>
+              </div>
+            </label>
+          </div>
+
+          <!-- Ingredients Sub-Panel -->
+          <section class="recipe-subpanel" id="ingredients-section">
+            <div class="recipe-section-heading">
+              <span class="recipe-section-icon" aria-hidden="true">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/>
+                  <line x1="3" y1="6" x2="21" y2="6"/>
+                  <path d="M16 10a4 4 0 0 1-8 0"/>
+                </svg>
+              </span>
+              <div>
+                <h2>Ingredients</h2>
+                <p>Add the ingredients and amounts needed.</p>
+              </div>
+            </div>
+
+            <div class="ingredient-list" data-ingredient-list>
+              {% set unit_options = ['cup', 'cups', 'tbsp', 'tsp', 'g', 'kg', 'ml', 'l', 'oz', 'lb', 'piece', 'pieces', 'clove', 'pinch', 'slice'] %}
+              {% if is_edit and recipe.ingredients %}
+                {% for ing in recipe.ingredients %}
+                {% set qty_float = ing.quantity|float %}
+                {% set qty_display = (qty_float|int) if qty_float == (qty_float|int) else (qty_float|round(2)) %}
+                <div class="ingredient-row">
+                  <input name="ingredient_name" required placeholder="Ingredient name" aria-label="Ingredient" value="{{ ing.name }}">
+                  <input name="ingredient_quantity" required placeholder="Amount (e.g. 1 cup, 2 tbsp)" aria-label="Quantity" value="{{ qty_display }}">
+                  <select name="ingredient_unit" aria-label="Unit">
+                    <option value="">Unit</option>
+                    {% for u in unit_options %}
+                    <option value="{{ u }}" {% if (ing.unit or '')|lower == u %}selected{% endif %}>{{ 'L' if u == 'l' else u }}</option>
+                    {% endfor %}
+                    {% if ing.unit and (ing.unit|lower) not in unit_options %}
+                    <option value="{{ ing.unit }}" selected>{{ ing.unit }}</option>
+                    {% endif %}
+                  </select>
+                  <button type="button" class="ingredient-remove" data-remove-ingredient aria-label="Remove ingredient" title="Remove ingredient">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                  </button>
+                </div>
+                {% endfor %}
+              {% else %}
+              <div class="ingredient-row">
+                <input name="ingredient_name" required placeholder="Ingredient name" aria-label="Ingredient">
+                <input name="ingredient_quantity" required placeholder="Amount (e.g. 1 cup, 2 tbsp)" aria-label="Quantity">
+                <select name="ingredient_unit" aria-label="Unit">
+                  <option value="">Unit</option>
+                  <option value="cup">cup</option>
+                  <option value="cups">cups</option>
+                  <option value="tbsp">tbsp</option>
+                  <option value="tsp">tsp</option>
+                  <option value="g">g</option>
+                  <option value="kg">kg</option>
+                  <option value="ml">ml</option>
+                  <option value="l">L</option>
+                  <option value="oz">oz</option>
+                  <option value="lb">lb</option>
+                  <option value="piece">piece</option>
+                  <option value="pieces">pieces</option>
+                  <option value="clove">clove</option>
+                  <option value="pinch">pinch</option>
+                  <option value="slice">slice</option>
+                </select>
+                <button type="button" class="ingredient-remove" data-remove-ingredient aria-label="Remove ingredient" title="Remove ingredient">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                </button>
+              </div>
+              {% endif %}
+            </div>
+            <button type="button" class="recipe-add-row" data-add-ingredient>＋ Add Ingredient</button>
+          </section>
+
+          <!-- Instructions Sub-Panel -->
+          <section class="recipe-subpanel" id="instructions-section">
+            <div class="recipe-section-heading">
+              <span class="recipe-section-icon" aria-hidden="true">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="4" y="2" width="16" height="20" rx="2"/>
+                  <line x1="8" y1="7" x2="16" y2="7"/>
+                  <line x1="8" y1="11" x2="16" y2="11"/>
+                  <line x1="8" y1="15" x2="13" y2="15"/>
+                </svg>
+              </span>
+              <div>
+                <h2>Instructions</h2>
+                <p>Write each step on a new line.</p>
+              </div>
+            </div>
+
+            {% set instructions_text = (recipe.steps|join('\n')) if is_edit and recipe.steps else '' %}
+            <div class="recipe-textarea-wrap">
+              <textarea class="instruction-editor" name="instructions" required rows="6" placeholder="1. Prepare the ingredients&#10;2. Cook until golden..." data-recipe-instructions>{{ instructions_text }}</textarea>
+              <small class="recipe-char-counter" data-inst-counter>{{ instructions_text|length }}/500</small>
+            </div>
+          </section>
+        </section>
+      </div>
+
+      <!-- Right Sidebar -->
+      <aside class="recipe-create-sidebar">
+        <!-- Recipe preview Card -->
+        <section class="recipe-editor-card recipe-preview-card">
+          <div class="recipe-preview-card__header">
+            <div class="recipe-preview-card__title">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#146348" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+              <h2>Recipe preview</h2>
+            </div>
+          </div>
+
+          <div class="recipe-preview-image" data-preview-image>
+            {% if has_existing_video %}
+              <video src="{{ recipe.video_path or recipe.image_path }}" muted loop autoplay playsinline preload="metadata"></video>
+            {% elif has_existing_image %}
+              <img src="{{ recipe.image_path }}" alt="Recipe preview">
+            {% else %}
+              <span class="recipe-preview-chef-icon" data-preview-placeholder-icon aria-hidden="true">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M6 13.87A4 4 0 0 1 7.41 6a5.11 5.11 0 0 1 1.05-1.54 5 5 0 0 1 7.08 0A5.11 5.11 0 0 1 16.59 6 4 4 0 0 1 18 13.87V21H6Z"/>
+                  <line x1="6" y1="17" x2="18" y2="17"/>
+                </svg>
+              </span>
+            {% endif %}
+          </div>
+
+          <div>
+            <span class="recipe-preview-category-pill" data-preview-category>{{ recipe.category_name if is_edit and recipe.category_name else 'Your category' }}</span>
+          </div>
+
+          <h3 data-preview-title>{{ recipe.title if is_edit and recipe.title else 'Your recipe title' }}</h3>
+          <p data-preview-description>{{ recipe.description if is_edit and recipe.description else 'Your description will appear here.' }}</p>
+        </section>
+
+        <!-- Recipe Details Card -->
+        <section class="recipe-editor-card recipe-details-card">
+          <div class="recipe-preview-card__title">
+            <span class="recipe-section-icon recipe-section-icon--sm" aria-hidden="true">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+                <line x1="16" y1="13" x2="8" y2="13"/>
+                <line x1="16" y1="17" x2="8" y2="17"/>
+              </svg>
+            </span>
+            <h2>Recipe Details</h2>
+          </div>
+
+          <label class="recipe-detail-select-label">
+            <span>Category <em class="required-star">*</em></span>
+            <select name="category_id" data-recipe-category-select required>
+              <option value="">Select category</option>
+              {% if new_categories or recommended_categories %}
+                {% if new_categories %}
+                <optgroup label="New Categories Added">
+                  {% for category in new_categories %}
+                  <option value="{{ category.id }}" {% if (is_edit and recipe.category_id == category.id) or (request.args.get('category_id')|int == category.id) or (request.args.get('category') and (request.args.get('category') == category.slug or request.args.get('category') == category.id|string)) %}selected{% endif %}>{{ category.name }}</option>
+                  {% endfor %}
+                </optgroup>
+                {% endif %}
+                {% if recommended_categories %}
+                <optgroup label="More Recommended Categories">
+                  {% for category in recommended_categories %}
+                  <option value="{{ category.id }}" {% if (is_edit and recipe.category_id == category.id) or (request.args.get('category_id')|int == category.id) or (request.args.get('category') and (request.args.get('category') == category.slug or request.args.get('category') == category.id|string)) %}selected{% endif %}>{{ category.name }}</option>
+                  {% endfor %}
+                </optgroup>
+                {% endif %}
+                {% if other_categories %}
+                <optgroup label="Other Categories">
+                  {% for category in other_categories %}
+                  <option value="{{ category.id }}" {% if (is_edit and recipe.category_id == category.id) or (request.args.get('category_id')|int == category.id) or (request.args.get('category') and (request.args.get('category') == category.slug or request.args.get('category') == category.id|string)) %}selected{% endif %}>{{ category.name }}</option>
+                  {% endfor %}
+                </optgroup>
+                {% endif %}
+              {% else %}
+                {% for category in categories %}
+                <option value="{{ category.id }}" {% if (is_edit and recipe.category_id == category.id) or (request.args.get('category_id')|int == category.id) or (request.args.get('category') and (request.args.get('category') == category.slug or request.args.get('category') == category.id|string)) %}selected{% endif %}>{{ category.name }}</option>
+                {% endfor %}
+              {% endif %}
+            </select>
+          </label>
+
+          <label class="recipe-detail-select-label">
+            <span>Location</span>
+            <select name="location_id" data-recipe-location-select>
+              <option value="">Select location</option>
+              {% for location in locations %}
+              <option value="{{ location.id }}" {% if (is_edit and recipe.location_id == location.id) or (request.args.get('location_id')|int == location.id) or (request.args.get('location') and (request.args.get('location') == location.name|lower or request.args.get('location') == location.id|string)) %}selected{% endif %}>{{ location.name }}</option>
+              {% endfor %}
+            </select>
+          </label>
+
+        </section>
+
+        <!-- Time & Preparation Card -->
+        <section class="recipe-editor-card recipe-time-card" aria-labelledby="recipe-time-heading">
+          <div class="recipe-time-card__title">
+            <span class="recipe-time-card__icon" aria-hidden="true">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg>
+            </span>
+            <h2 id="recipe-time-heading">Time &amp; Preparation</h2>
+          </div>
+
+          {% set time_fields = [
+            ('prep', 'Preparation Time', recipe.prep_minutes if is_edit and recipe.prep_minutes else None),
+            ('cook', 'Cooking Time', recipe.cook_minutes if is_edit and recipe.cook_minutes else None)
+          ] %}
+          {% for prefix, label, total in time_fields %}
+          {% set current_hours = (total // 60) if total else None %}
+          {% set current_minutes = (total % 60) if total else None %}
+          <fieldset class="recipe-time-group">
+            <legend class="recipe-time-group__label">
+              {% if prefix == 'prep' %}
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 13.87A4 4 0 0 1 7.41 6a5.11 5.11 0 0 1 1.05-1.54 5 5 0 0 1 7.08 0A5.11 5.11 0 0 1 16.59 6 4 4 0 0 1 18 13.87V21H6Z"/><line x1="6" y1="17" x2="18" y2="17"/></svg>
+              {% else %}
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4 10h16v7a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3v-7Zm-2 0h2v2H2zm18 0h2v2h-2zM5 8h14v1H5zm5-3h4v2h-4z"/></svg>
+              {% endif %}
+              <span>{{ label }} <em class="required-star">*</em></span>
+            </legend>
+            <div class="recipe-time-group__selects">
+              <label class="recipe-time-select">
+                <span class="visually-hidden">{{ label }} hours</span>
+                <svg class="recipe-time-select__icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg>
+                <select name="{{ prefix }}_hours" data-{{ prefix }}-hours>
+                  <option value="" {% if current_hours is none %}selected{% endif %}>Hours</option>
+                  {% for hour in range(0, 25) %}
+                  <option value="{{ hour }}" {% if current_hours is not none and current_hours == hour %}selected{% endif %}>{{ hour }} {{ 'hour' if hour == 1 else 'hours' }}</option>
+                  {% endfor %}
+                </select>
+              </label>
+              <label class="recipe-time-select">
+                <span class="visually-hidden">{{ label }} minutes</span>
+                <svg class="recipe-time-select__icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="13" r="8"/><polyline points="12 9 12 13 14 15"/><line x1="10" y1="2" x2="14" y2="2"/><line x1="12" y1="2" x2="12" y2="5"/></svg>
+                <select name="{{ prefix }}_mins" data-{{ prefix }}-mins>
+                  <option value="" {% if current_minutes is none %}selected{% endif %}>Minutes</option>
+                  {% for minute in range(0, 61) %}
+                  <option value="{{ minute }}" {% if current_minutes is not none and current_minutes == minute %}selected{% endif %}>{{ minute }} min</option>
+                  {% endfor %}
+                </select>
+              </label>
+            </div>
+          </fieldset>
+          {% endfor %}
+
+          <p class="recipe-time-card__hint">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+            <span>Enter the time needed to prepare and cook this recipe.</span>
+          </p>
+        </section>
+
+        <!-- Additional Information Card -->
+        <section class="recipe-editor-card recipe-additional-info-card" id="additional-info-section">
+          <div class="recipe-preview-card__title">
+            <span class="recipe-section-icon recipe-section-icon--sm" aria-hidden="true" style="background:#fff8e6; color:#e09300; font-size:1.1rem;">💡</span>
+            <h2>Additional Information</h2>
+          </div>
+          <p class="recipe-additional-info-desc">Add helpful cooking tips, serving notes, and flavor profiles for the community.</p>
+
+          <label class="recipe-detail-select-label">
+            <span class="recipe-additional-label"><span>🔸</span> <strong>Cooking Tips</strong></span>
+            <input name="cooking_tips" maxlength="500" placeholder="e.g. Simmer gently to bring out the full flavor." value="{{ recipe.cooking_tips if is_edit and recipe.cooking_tips else '' }}">
+          </label>
+
+          <label class="recipe-detail-select-label">
+            <span class="recipe-additional-label"><span>⭐</span> <strong>Serving Suggestion</strong></span>
+            <input name="serving_suggestion" maxlength="255" placeholder="e.g. Serve warm with steamed rice." value="{{ recipe.serving_suggestion if is_edit and recipe.serving_suggestion else '' }}">
+          </label>
+
+          <label class="recipe-detail-select-label">
+            <span class="recipe-additional-label"><span>🧡</span> <strong>Food Type</strong></span>
+            <input name="food_type" maxlength="100" placeholder="e.g. Asian, Street Food, Merienda" value="{{ recipe.food_type if is_edit and recipe.food_type else '' }}">
+          </label>
+
+          <label class="recipe-detail-select-label">
+            <span class="recipe-additional-label"><span>💧</span> <strong>Taste</strong></span>
+            <input name="taste" maxlength="100" placeholder="e.g. Savory and aromatic" value="{{ recipe.taste if is_edit and recipe.taste else '' }}">
+          </label>
+
+          <label class="recipe-detail-select-label">
+            <span class="recipe-additional-label"><span>🟢</span> <strong>Best Served</strong></span>
+            <input name="best_served" maxlength="100" placeholder="e.g. Lunch or Dinner" value="{{ recipe.best_served if is_edit and recipe.best_served else '' }}">
+          </label>
+        </section>
+
+        <section class="recipe-editor-card recipe-publish-card" aria-label="Publish recipe">
+          <div class="recipe-save-actions">
+            <button type="submit" class="recipe-publish-button" data-publish>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+              <span>{{ 'Save & Publish Changes' if is_edit else 'Publish Recipe' }}</span>
+            </button>
+            <button type="submit" class="recipe-draft-button" data-save-draft>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+              <span>Save as Draft</span>
+            </button>
+          </div>
+        </section>
+      </aside>
+    </section>
+  </form>
+</main>
+{% endblock %}

@@ -1,0 +1,36 @@
+{% if otp_code %}
+<aside class="otp-notification-toast" role="alert" aria-live="assertive" data-otp-toast data-otp-target-email="{{ email or '' }}" {% if not is_device_gmail_logged_in %}style="display: none;"{% endif %}>
+  <div class="otp-toast-progress-bar" data-otp-toast-progress></div>
+  <div class="otp-toast-header">
+    <div class="otp-toast-brand">
+      <span class="otp-toast-gmail-icon" aria-hidden="true">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+          <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" stroke="#ea4335" stroke-width="2"/>
+          <path d="M22 6l-10 7L2 6" stroke="#ea4335" stroke-width="2"/>
+        </svg>
+      </span>
+      <div class="otp-toast-titles">
+        <strong class="otp-toast-app">Gmail • RecipeShare Verification</strong>
+        <span class="otp-toast-meta">Device Email Push • <time class="otp-toast-time">Just now</time></span>
+      </div>
+    </div>
+    <button type="button" class="otp-toast-close" aria-label="Dismiss notification" data-otp-toast-close title="Dismiss">&times;</button>
+  </div>
+  <div class="otp-toast-body">
+    <div class="otp-toast-message">
+      <p class="otp-toast-text">Your 6-digit verification code is:</p>
+      <div class="otp-toast-code-badge" data-otp-code="{{ otp_code }}">
+        <span class="otp-toast-digit-pill">{{ otp_code }}</span>
+      </div>
+    </div>
+    <p class="otp-toast-subtext">Received via Gmail on this device (<strong>{{ masked_email or email or 'your registered email' }}</strong>). Valid for <strong data-otp-toast-countdown="{{ expires_seconds|default(60) }}">{{ expires_seconds|default(60) }}s</strong>.</p>
+  </div>
+  <div class="otp-toast-footer">
+    <button type="button" class="otp-toast-autofill-btn" data-otp-autofill="{{ otp_code }}">
+      <span class="otp-toast-icon">⚡</span>
+      <span>Auto-fill Verification Code</span>
+    </button>
+  </div>
+</aside>
+{% endif %}
+

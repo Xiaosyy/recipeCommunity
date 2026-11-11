@@ -1,0 +1,93 @@
+{% if not spa_fragment|default(false) %}{% extends 'layouts/app.html' %}{% endif %}
+{% block title %}{% if not spa_fragment|default(false) %}{{ module_title }} — RecipeShare{% endif %}{% endblock %}
+{% block content %}
+<section class="admin-module">
+  <header class="admin-module__header"><div><p class="eyebrow">Administration</p><h1>{{ module_title }}</h1></div></header>
+  {% include 'partials/flash_messages.html' %}
+  {% if module == 'users' %}
+  <section class="admin-user-manager">
+    <div class="admin-content-banner"><span>✔</span><strong>User Management</strong></div>
+    <p class="admin-content-description">Manage community accounts, roles, and access status.</p>
+    <div class="admin-filter-bar"><label><span>⌕</span><input id="admin-user-search" type="search" placeholder="Search users..."></label><select id="admin-user-role-filter"><option value="">All Roles</option><option value="user">User</option><option value="admin">Admin</option></select><select id="admin-user-status-filter"><option value="">All Statuses</option><option value="active">Active</option><option value="suspended">Suspended</option><option value="deactivated">Deactivated</option></select></div>
+    <div class="admin-table-shell admin-user-table"><table><thead><tr><th>User</th><th>Email</th><th>Role</th><th>Status</th><th>Recipes</th><th>Actions</th></tr></thead><tbody>
+      {% for user in rows %}<tr data-user-name="{{ user.username|lower }}" data-user-email="{{ user.email|lower }}" data-user-role="{{ user.role_name }}" data-user-status="{{ user.status }}">
+        <td><div class="admin-user-name"><span class="admin-user-avatar">{{ user.username[0]|upper }}</span><strong>{{ user.username }}</strong></div></td><td>{{ user.email }}</td>
+        <td><form class="admin-inline-form" method="post" action="/admin/users/role"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="user_id" value="{{ user.id }}"><select name="role" aria-label="Role for {{ user.username }}" onchange="this.form.submit()"><option value="user" {% if user.role_name == 'user' %}selected{% endif %}>User</option><option value="admin" {% if user.role_name == 'admin' %}selected{% endif %}>Admin</option></select></form></td>
+        <td><form class="admin-inline-form" method="post" action="/admin/users/status"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="user_id" value="{{ user.id }}"><select name="status" aria-label="Status for {{ user.username }}" onchange="this.form.submit()"><option value="active" {% if user.status == 'active' %}selected{% endif %}>Active</option><option value="suspended" {% if user.status == 'suspended' %}selected{% endif %}>Suspended</option><option value="deactivated" {% if user.status == 'deactivated' %}selected{% endif %}>Deactivated</option></select></form></td>
+        <td><span class="admin-count-badge">{{ user.recipe_count }}</span></td>
+        <td>
+          {% if user.id != session.get('user_id') %}
+          <form class="admin-inline-form" method="post" action="/admin/users/delete" onsubmit="return confirm('⚠️ Are you sure you want to PERMANENTLY delete user @{{ user.username }} ({{ user.email }})? This action cannot be undone and will delete all their recipes and account data.');">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="user_id" value="{{ user.id }}">
+            <button type="submit" class="admin-delete-btn" title="Permanently delete user @{{ user.username }}">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                <line x1="10" y1="11" x2="10" y2="17"></line>
+                <line x1="14" y1="11" x2="14" y2="17"></line>
+              </svg>
+              <span>Delete</span>
+            </button>
+          </form>
+          {% else %}
+          <span class="admin-self-badge" title="You cannot delete your own account">Current User</span>
+          {% endif %}
+        </td>
+      </tr>{% else %}<tr><td colspan="6" class="admin-empty">No users found.</td></tr>{% endfor %}
+    </tbody></table></div>
+  </section>
+  {% elif module == 'categories' %}
+  <section class="admin-category-manager">
+    <div class="admin-content-banner"><span>⚙</span><strong>Category Management</strong></div>
+    <p class="admin-content-description">Search, view, and manage recipe categories.</p>
+    <div class="admin-filter-bar">
+      <label><span>⌕</span><input id="admin-category-search" type="search" placeholder="Search categories..." aria-label="Search categories"></label>
+      <select id="admin-category-status-filter" aria-label="Filter by status">
+        <option value="">All Statuses</option>
+        <option value="active">Active</option>
+        <option value="inactive">Inactive</option>
+      </select>
+    </div>
+    <div class="admin-table-shell admin-category-table"><table><thead><tr><th>Category</th><th>Description</th><th>Recipes Active</th><th>Action</th></tr></thead><tbody>
+      {% for category in rows %}<tr data-category-name="{{ category.name|lower }}" data-category-desc="{{ (category.description or '')|lower }}" data-category-status="{{ 'active' if category.is_active else 'inactive' }}">
+        <td><strong>{{ category.name }}</strong></td><td>{{ category.description or '—' }}</td>
+        <td><span class="admin-count">{{ category.recipe_count }}</span><span class="admin-status admin-status--{{ 'active' if category.is_active else 'removed' }}">✓ {{ 'Yes' if category.is_active else 'No' }}</span></td>
+        <td><div class="admin-row-actions">
+          <form method="post" action="/admin/categories/save"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="category_id" value="{{ category.id }}"><input type="hidden" name="name" value="{{ category.name }}"><input type="hidden" name="description" value="{{ category.description or '' }}"><input type="hidden" name="active" value="{{ '' if category.is_active else '1' }}"><button class="admin-action-button admin-action-button--outline" type="submit">⇄ Toggle active</button></form>
+          <form method="post" action="/admin/categories/delete" onsubmit="return confirm('Delete this category?');"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="category_id" value="{{ category.id }}"><button class="admin-action-button admin-action-button--delete" type="submit">⌫ Delete</button></form>
+        </div></td>
+      </tr>{% else %}<tr><td colspan="4" class="admin-empty">No categories found.</td></tr>{% endfor %}
+    </tbody></table></div>
+  </section>
+  {% elif module == 'reports' %}
+  <div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>Target</th><th>Reporter</th><th>Reason</th><th>Status</th><th>Action</th></tr></thead><tbody>{% for report in rows %}<tr><td>{{ report.target_type }} #{{ report.target_id }}</td><td>{{ report.reporter_name }}</td><td>{{ report.reason }}</td><td>{{ report.status }}</td><td>{% if report.status == 'open' %}<form class="admin-inline-actions" method="post" action="/admin/reports/status"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="report_id" value="{{ report.id }}"><button name="status" value="resolved">Resolve</button><button name="status" value="dismissed">Dismiss</button></form>{% else %}—{% endif %}</td></tr>{% else %}<tr><td colspan="5">No reports found.</td></tr>{% endfor %}</tbody></table></div>
+  {% elif module == 'content' %}
+  <section class="admin-content-manager">
+    <div class="admin-content-banner"><span>✔</span><strong>Content Moderation</strong></div>
+    <p class="admin-content-description">Review and manage recipe content from the community.</p>
+    <div class="admin-table-shell admin-content-table"><table><thead><tr><th>Recipe</th><th>Author</th><th>Category</th><th>Status</th><th>Actions</th></tr></thead><tbody>
+      {% for recipe in rows %}<tr>
+        <td><div class="admin-recipe-name"><div class="admin-recipe-thumb"{% if recipe.image_path %} style="background-image:url('{{ recipe.image_path }}')"{% endif %}></div><strong>{{ recipe.title }}</strong></div></td>
+        <td>{{ recipe.author_name or 'Unknown' }}</td><td>{{ recipe.category_name or '—' }}</td>
+        <td><span class="admin-status admin-status--{{ 'active' if recipe.status == 'published' else 'removed' if recipe.status in ['removed','hidden'] else 'draft' }}">● {{ recipe.status }}</span></td>
+        <td><form class="admin-content-actions" method="post" action="/admin/content/status"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="recipe_id" value="{{ recipe.id }}"><button class="admin-action-button admin-action-button--primary" name="status" value="published">⇧ Publish</button><button class="admin-action-button admin-action-button--outline" name="status" value="hidden">◉ Hide</button><button class="admin-action-button admin-action-button--delete" name="status" value="removed">⌫ Remove</button></form></td>
+      </tr>{% else %}<tr><td colspan="5" class="admin-empty">No recipes found.</td></tr>{% endfor %}
+    </tbody></table></div>
+  </section>
+  {% elif module == 'activity' %}
+  <section class="admin-activity-manager">
+    <div class="admin-content-banner"><span>🛡</span><strong>Audit Activity</strong></div>
+    <p class="admin-content-description">Track system activity and important changes made in the community.</p>
+    <div class="admin-filter-bar"><label><span>⌕</span><input id="admin-activity-search" type="search" placeholder="Search activity..."></label><select id="admin-activity-action-filter"><option value="">All Actions</option>{% for item in rows|unique(attribute='action') %}<option value="{{ item.action|lower }}">{{ item.action }}</option>{% endfor %}</select><button class="admin-action-button admin-action-button--outline" type="button" onclick="location.reload()">↻ Refresh</button></div>
+    <div class="admin-table-shell admin-activity-table"><table><thead><tr><th>Time</th><th>Actor</th><th>Action</th><th>Target</th><th>Note</th></tr></thead><tbody>
+      {% for item in rows %}<tr data-activity-search="{{ item.actor_name }} {{ item.action }} {{ item.target_type }} {{ item.note or '' }}" data-activity-actor="{{ item.actor_name|lower }}" data-activity-action="{{ item.action|lower }}"><td>{{ item.created_at }}</td><td><div class="admin-activity-actor"><span class="admin-user-avatar">{{ item.actor_name[0]|upper }}</span><strong>{{ item.actor_name }}</strong><span class="admin-role-badge">{{ item.actor_role|default('Admin')|capitalize }}</span></div></td><td><span class="admin-action-badge">✎ {{ item.action }}</span></td><td>{{ item.target_type }}{% if item.target_id is not none %} #{{ item.target_id }}{% endif %}</td><td>{{ item.note or '—' }}</td></tr>{% else %}<tr><td colspan="5" class="admin-empty">No activity recorded.</td></tr>{% endfor %}
+    </tbody></table></div>
+  </section>
+  {% elif module == 'notifications' %}
+  <div class="admin-list">{% for item in rows %}<article><strong>{{ item.type }}</strong><small>{{ item.created_at }}</small></article>{% else %}<p>No notifications.</p>{% endfor %}</div>
+  {% elif module == 'system' %}
+  <div class="dashboard-metrics"><article class="metric-card"><strong>{{ system.user_count }}</strong><span>Users</span></article><article class="metric-card"><strong>{{ system.recipe_count }}</strong><span>Recipes</span></article><article class="metric-card"><strong>{{ system.open_report_count }}</strong><span>Open reports</span></article></div>
+  {% endif %}
+</section>
+{% endblock %}

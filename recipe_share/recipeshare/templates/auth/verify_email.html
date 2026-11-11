@@ -1,0 +1,40 @@
+{% if not spa_fragment|default(false) %}{% extends 'layouts/auth.html' %}{% endif %}
+{% block title %}{% if not spa_fragment|default(false) %}Verify Email — RecipeShare{% endif %}{% endblock %}
+{% block content %}
+<section class="auth-screen auth-screen-register auth-screen-verify">
+  {% include 'components/auth/otp-notification-toast.html' %}
+  {% set description='Verify your email address to protect your account and unlock recipe creation, ratings, and community collections.' %}{% set show_benefits=false %}{% set script_heading='Verify.<br>Cook.<br>Share.' %}{% include 'components/auth/story.html' %}
+  <div class="auth-card-wrap"><div class="auth-card register-card verify-email-card">
+    {% set heading='Verify Your Email' %}{% set description='Enter the 6-digit OTP code sent to your Gmail inbox' %}{% include 'components/auth/brand-card.html' %}
+    {% include 'partials/flash_messages.html' %}
+
+    <div class="otp-recipient-banner">
+      <img src="{{ url_for('static', filename='images/recipeshare-favicon.png') }}" alt="RecipeShare Community" class="otp-sender-avatar" width="42" height="42">
+      <div>
+        <p class="otp-recipient-text">Sent by <strong>RecipeShare Community</strong> to <strong>{{ masked_email or email or 'your email' }}</strong></p>
+        <small class="otp-expiry-note">
+          Expires in <strong class="otp-countdown-badge" data-otp-countdown="{{ expires_seconds|default(60) }}">{{ expires_seconds|default(60) }}s</strong> • Up to 5 attempts
+        </small>
+      </div>
+    </div>
+
+    {% include 'components/auth/device-gmail-banner.html' %}
+
+    <form method="post" action="/verify-email" class="auth-form otp-verify-form" data-otp-form novalidate>
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      {% set label='Enter 6-Digit Verification Code' %}{% include 'components/auth/otp-input.html' %}
+      {% set button_type='button' %}{% set type='submit' %}{% set label='Verify Email & Continue' %}{% set variant='primary' %}{% set size='' %}{% set extra_classes='auth-submit' %}{% include 'components/button.html' %}
+    </form>
+
+    <div class="otp-resend-row">
+      <span>Didn't receive the code?</span>
+      <form method="post" action="/verify-email/resend" class="otp-resend-form">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button type="submit" class="otp-resend-btn" data-otp-resend-btn>Resend OTP</button>
+      </form>
+    </div>
+
+    <p class="auth-switch">Want to use a different account? <a href="/login" data-spa-link data-auth-transition="back">Back to Log In</a></p>
+  </div></div>
+</section>
+{% endblock %}

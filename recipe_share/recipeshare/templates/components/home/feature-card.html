@@ -1,0 +1,4 @@
+{% set feature_link = '/recipes' if title == 'Discover Recipes' else ('/locations' if title == 'Find By Location' else ('/recipes' if title == 'Rate & Review' else ('/register' if not session.get('user_id') else '/dashboard'))) %}
+<a href="{{ feature_link }}" data-spa-link class="feature-card-anchor" style="text-decoration: none; color: inherit; display: block;">
+  <article><span aria-hidden="true">{{ icon }}</span><strong>{{ title }}</strong><p>{{ description }}</p></article>
+</a>

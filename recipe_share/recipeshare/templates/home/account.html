@@ -1,0 +1,41 @@
+{% if not spa_fragment|default(false) %}{% extends 'layouts/app.html' %}{% endif %}
+{% block title %}{% if not spa_fragment|default(false) %}Home — RecipeShare{% endif %}{% endblock %}
+{% block content %}
+<section class="account-home">
+  {% include 'partials/flash_messages.html' %}
+  <header class="account-home-hero">
+    <div class="account-home-hero-copy">
+      <span class="account-home-welcome">♧ &nbsp; Welcome back, {{ profile.display_name or session.get('username') or 'Chef' }}</span>
+      <h1>What will you<br><strong>cook</strong> today?</h1>
+      <p>Discover community favorites or share something delicious from your kitchen.</p>
+      <div class="account-home-actions">
+        <a class="ui-button ui-button--primary" href="/recipes/create" data-spa-link>♨ Create Recipe &nbsp;→</a>
+        <a class="ui-button ui-button--secondary" href="/recipes" data-spa-link>⌕ Browse Recipes</a>
+      </div>
+    </div>
+    <div class="account-home-handnote" aria-hidden="true">Cook<br>Share<br>Connect ♡</div>
+  </header>
+
+  <section class="account-home-stats" aria-label="My recipe statistics" data-home-stats>
+    <a href="/my-recipes" data-spa-link><span class="stat-icon stat-icon--recipes">♨</span>
+      <div><strong data-home-stat="my_recipes">{{ '{:,}'.format(recipe_count) }}</strong><small>My Recipes</small></div>
+      <b>→</b>
+    </a>
+    <a href="/dashboard" data-spa-link><span class="stat-icon stat-icon--views">◉</span>
+      <div><strong data-home-stat="total_views">{{ '{:,}'.format(metrics.total_views|default(0))
+          }}</strong><small>Recipe Views</small></div><b>→</b>
+    </a>
+    <a href="/dashboard" data-spa-link><span class="stat-icon stat-icon--likes">♡</span>
+      <div><strong data-home-stat="total_likes">{{ '{:,}'.format(metrics.total_likes|default(0)) }}</strong><small>Total
+          Likes</small></div><b>→</b>
+    </a>
+    <a href="/recipes?filter=newest" data-spa-link><span class="stat-icon stat-icon--recent">▧</span>
+      <div><strong data-home-stat="recent">{{ '{:,}'.format(recent_recipes|default(inventory)|length) }}</strong><small>Recent Recipes</small>
+      </div><b>→</b>
+    </a>
+  </section>
+
+  {% include 'components/home/category-discovery.html' %}
+  {% include 'components/home/recipe-discovery.html' %}
+</section>
+{% endblock %}

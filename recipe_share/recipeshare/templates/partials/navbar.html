@@ -1,0 +1,29 @@
+<header class="public-header">
+  <div class="public-header-inner">
+    <a class="brand" href="/" aria-label="RecipeShare home"><img class="public-logo-image" src="{{ community_logo_url }}" alt="RecipeShare Community"></a>
+    <button class="public-mobile-menu" type="button" aria-expanded="false" aria-controls="public-navigation" aria-label="Toggle navigation">☰</button>
+    <nav id="public-navigation" aria-label="Primary navigation" data-public-navigation>
+      <a href="/" data-spa-link>Home</a>
+      <a href="/recipes" data-spa-link>Recipes</a>
+      <a href="/categories" data-spa-link>Categories</a>
+      <a href="/locations" data-spa-link><span class="nav-location-icon">📍</span> Locations</a>
+    </nav>
+    <div class="public-header-actions">
+      <form class="global-search ui-search" action="/recipes" method="get" role="search" data-recipe-search>
+        <label class="sr-only" for="public-search">Search recipes by name or word</label>
+        <span class="search-glass-icon" aria-hidden="true">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+        </span>
+        <input id="public-search" name="q" type="search" placeholder="Search recipes..." value="{{ query|default(request.args.get('q', '')) }}" autocomplete="off" data-global-recipe-search-input>
+        <button type="submit" aria-label="Submit search">Search</button>
+      </form>
+      <div class="public-auth-actions">
+        <a class="ui-button ui-button--secondary ui-button--small" href="/login" data-spa-link>Log in</a>
+        <a class="ui-button ui-button--primary ui-button--small" href="/register" data-spa-link>Sign up</a>
+      </div>
+    </div>
+  </div>
+</header>

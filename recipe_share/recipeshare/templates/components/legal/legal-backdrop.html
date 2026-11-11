@@ -1,0 +1,146 @@
+<div class="legal-backdrop" aria-hidden="true">
+  <!-- Soft organic curved waves -->
+  <svg class="legal-backdrop__waves" viewBox="0 0 1440 850" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M0 480C340 370 620 620 980 470C1220 380 1360 430 1440 480V850H0V480Z" fill="#E6EFE3" opacity="0.6" />
+    <path d="M0 620C380 500 750 710 1150 560C1300 510 1390 540 1440 570V850H0V620Z" fill="#DCE9D7" opacity="0.5" />
+    <path d="M0 720C420 630 840 760 1220 670C1340 640 1400 660 1440 680V850H0V720Z" fill="#D3E4CD" opacity="0.4" />
+  </svg>
+
+  <!-- Top-left corner leaves -->
+  <svg class="legal-leaf legal-leaf--top-left" viewBox="0 0 240 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M-10 -10C45 40 100 100 155 175" stroke="#9BBF8E" stroke-width="3" stroke-linecap="round" />
+    <path d="M40 35C85 22 128 40 148 76C104 82 64 66 40 35Z" fill="#A7C79B" opacity="0.85" />
+    <path d="M15 68C46 112 38 160 8 190C-6 148 -2 100 15 68Z" fill="#B5D1AA" opacity="0.8" />
+    <path d="M82 86C128 78 168 100 182 134C140 140 102 120 82 86Z" fill="#9BBF8E" opacity="0.9" />
+    <path d="M60 110C78 146 72 184 48 208C34 176 40 138 60 110Z" fill="#C2DCBA" opacity="0.8" />
+    <path d="M120 130C155 130 185 155 190 180C160 185 130 165 120 130Z" fill="#8EB382" opacity="0.85" />
+  </svg>
+
+  <!-- Left watermark chef hat outline -->
+  <div class="legal-watermark legal-watermark--left" aria-hidden="true">
+    <svg viewBox="0 0 100 90" width="110" height="100" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M50 14C40 14 32 20 29 28C20 29 14 36 14 44C14 52 20 59 28 60V63H72V60C80 59 86 52 86 44C86 36 80 29 71 28C68 20 60 14 50 14Z" stroke="#B8D0B3" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+      <path d="M26 63H74L71 76H29L26 63Z" stroke="#B8D0B3" stroke-width="3" stroke-linejoin="round" />
+      <path d="M34 69H66" stroke="#B8D0B3" stroke-width="2.5" stroke-linecap="round" />
+    </svg>
+  </div>
+
+  {% if variant == 'privacy' %}
+  <!-- Right watermark spoon & fork outline for Privacy Policy -->
+  <div class="legal-watermark legal-watermark--right" aria-hidden="true">
+    <svg viewBox="0 0 100 130" width="95" height="120" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- Spoon -->
+      <path d="M34 15C26 15 22 25 22 36C22 47 28 54 34 56V115" stroke="#B8D0B3" stroke-width="3" stroke-linecap="round" />
+      <!-- Fork -->
+      <path d="M66 15V42M58 15V42M74 15V42M58 42C58 52 63 56 66 56V115" stroke="#B8D0B3" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+    </svg>
+  </div>
+  {% else %}
+  <!-- Right watermark chef hat outline for Terms of Service -->
+  <div class="legal-watermark legal-watermark--right" aria-hidden="true">
+    <svg viewBox="0 0 100 90" width="110" height="100" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M50 14C40 14 32 20 29 28C20 29 14 36 14 44C14 52 20 59 28 60V63H72V60C80 59 86 52 86 44C86 36 80 29 71 28C68 20 60 14 50 14Z" stroke="#B8D0B3" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+      <path d="M26 63H74L71 76H29L26 63Z" stroke="#B8D0B3" stroke-width="3" stroke-linejoin="round" />
+      <path d="M34 69H66" stroke="#B8D0B3" stroke-width="2.5" stroke-linecap="round" />
+    </svg>
+  </div>
+  {% endif %}
+
+  <!-- Top-right corner garnish / leaves -->
+  {% if variant == 'terms' %}
+  <div class="legal-corner-garnish legal-corner-garnish--top-right" aria-hidden="true">
+    <!-- Basil leaves and cherry tomatoes illustration -->
+    <svg viewBox="0 0 220 200" width="200" height="180" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- Basil cluster -->
+      <path d="M140 10C110 30 105 70 120 95C145 90 175 75 180 45C185 20 160 5 140 10Z" fill="#3D7D39" opacity="0.9" />
+      <path d="M120 95C90 110 80 145 95 170C120 165 145 150 150 120C155 95 135 85 120 95Z" fill="#4B9B46" opacity="0.85" />
+      <path d="M165 50C185 70 200 65 215 50C210 30 195 25 175 35Z" fill="#2E662A" opacity="0.85" />
+      <path d="M100 45C80 60 75 85 85 105C105 100 120 90 125 70Z" fill="#58B352" opacity="0.85" />
+      <!-- Tomato 1 (large ripe red tomato) -->
+      <circle cx="175" cy="115" r="32" fill="url(#tomato-grad-1)" />
+      <ellipse cx="166" cy="104" rx="8" ry="4" transform="rotate(-30 166 104)" fill="#FFFFFF" opacity="0.45" />
+      <!-- Green stem star -->
+      <path d="M175 83L177 89L183 87L178 92L182 96L176 94L174 99L173 93L167 95L171 91L167 87L173 89Z" fill="#3B7E34" />
+      <!-- Tomato 2 (smaller front red tomato) -->
+      <circle cx="138" cy="148" r="24" fill="url(#tomato-grad-2)" />
+      <ellipse cx="130" cy="140" rx="6" ry="3" transform="rotate(-30 130 140)" fill="#FFFFFF" opacity="0.45" />
+      <path d="M138 124L139 128L144 127L140 131L143 134L139 132L137 136L136 132L132 133L135 130L132 127L136 128Z" fill="#3B7E34" />
+      <defs>
+        <radialGradient id="tomato-grad-1" cx="35%" cy="30%" r="65%">
+          <stop offset="0%" stop-color="#FF5A36" />
+          <stop offset="60%" stop-color="#E22410" />
+          <stop offset="100%" stop-color="#A51204" />
+        </radialGradient>
+        <radialGradient id="tomato-grad-2" cx="35%" cy="30%" r="65%">
+          <stop offset="0%" stop-color="#FF633E" />
+          <stop offset="60%" stop-color="#E52712" />
+          <stop offset="100%" stop-color="#A81506" />
+        </radialGradient>
+      </defs>
+    </svg>
+  </div>
+  {% else %}
+  <!-- Top-right corner leafy branch for Privacy Policy -->
+  <svg class="legal-leaf legal-leaf--top-right" viewBox="0 0 220 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M230 -10C185 38 140 92 95 155" stroke="#9BBF8E" stroke-width="3" stroke-linecap="round" />
+    <path d="M180 28C138 16 98 34 80 68C122 74 160 58 180 28Z" fill="#A7C79B" opacity="0.85" />
+    <path d="M204 58C178 98 186 144 212 174C226 134 220 90 204 58Z" fill="#B5D1AA" opacity="0.8" />
+    <path d="M144 78C104 72 68 92 56 124C94 128 128 110 144 78Z" fill="#9BBF8E" opacity="0.9" />
+  </svg>
+  {% endif %}
+
+  <!-- Bottom-left culinary dish accent for Terms -->
+  {% if variant == 'terms' %}
+  <div class="legal-corner-garnish legal-corner-garnish--bottom-left" aria-hidden="true">
+    <svg viewBox="0 0 240 240" width="220" height="220" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- Plate rim -->
+      <circle cx="50" cy="190" r="140" fill="#FFFFFF" stroke="#E5ECE2" stroke-width="12" opacity="0.95" />
+      <circle cx="50" cy="190" r="126" fill="#FBF8F3" />
+      <!-- Salad greens & bowl content -->
+      <path d="M-10 120C15 100 45 110 65 95C85 110 120 120 140 150C110 180 60 190 20 170Z" fill="#3D7D39" opacity="0.8" />
+      <path d="M20 100C45 80 75 90 95 115C65 140 30 140 10 120Z" fill="#58B352" opacity="0.85" />
+      <path d="M50 140C70 120 100 125 120 150C95 175 60 170 40 155Z" fill="#75C56E" opacity="0.75" />
+      <!-- Tomato half 1 -->
+      <circle cx="35" cy="155" r="26" fill="#D82914" />
+      <circle cx="35" cy="155" r="20" fill="#F24128" />
+      <path d="M25 150C28 145 35 145 37 150C35 155 28 155 25 150Z" fill="#FBE8A6" />
+      <path d="M38 160C40 155 46 155 48 160C46 165 40 165 38 160Z" fill="#FBE8A6" />
+      <!-- Tomato half 2 -->
+      <circle cx="85" cy="175" r="28" fill="#D82914" />
+      <circle cx="85" cy="175" r="22" fill="#F24128" />
+      <path d="M75 170C78 165 85 165 87 170C85 175 78 175 75 170Z" fill="#FBE8A6" />
+      <!-- Fresh basil leaf in salad -->
+      <path d="M70 125C90 115 110 125 115 140C95 145 80 135 70 125Z" fill="#2E662A" />
+    </svg>
+  </div>
+  {% else %}
+  <!-- Bottom-left leaves for Privacy -->
+  <svg class="legal-leaf legal-leaf--bottom-left" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M-10 210C35 165 80 120 145 75" stroke="#9BBF8E" stroke-width="3" stroke-linecap="round" />
+    <path d="M28 160C16 118 34 78 68 60C74 102 58 140 28 160Z" fill="#A7C79B" opacity="0.8" />
+    <path d="M58 184C98 158 144 166 174 192C134 206 90 200 58 184Z" fill="#B5D1AA" opacity="0.75" />
+    <path d="M78 124C72 84 92 48 124 36C128 74 110 108 78 124Z" fill="#9BBF8E" opacity="0.85" />
+  </svg>
+  {% endif %}
+
+  <!-- Bottom-right corner leaves & peppercorns -->
+  <div class="legal-bottom-right-wrap" aria-hidden="true">
+    <svg class="legal-leaf legal-leaf--bottom-right" viewBox="0 0 240 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M235 245C192 186 154 122 128 48" stroke="#8EB382" stroke-width="3.5" stroke-linecap="round" />
+      <path d="M168 158C118 152 78 122 68 82C112 78 152 108 168 158Z" fill="#A7C79B" />
+      <path d="M72 86C108 108 138 132 164 155" stroke="#84AA78" stroke-width="2" stroke-linecap="round" />
+      <path d="M148 104C144 62 166 26 198 12C204 52 182 88 148 104Z" fill="#B5D1AA" />
+      <path d="M192 192C144 202 98 186 76 154C112 138 158 152 192 192Z" fill="#9BBF8E" />
+    </svg>
+    <!-- Scattered peppercorns / spice dots -->
+    <svg class="legal-peppercorns" viewBox="0 0 80 120" width="70" height="110" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="20" cy="25" r="4.5" fill="#6A5A4A" opacity="0.6" />
+      <circle cx="48" cy="40" r="3.5" fill="#524337" opacity="0.7" />
+      <circle cx="30" cy="65" r="5" fill="#42342A" opacity="0.75" />
+      <circle cx="62" cy="80" r="3.5" fill="#6A5A4A" opacity="0.55" />
+      <circle cx="24" cy="98" r="4" fill="#524337" opacity="0.65" />
+      <circle cx="50" cy="112" r="3" fill="#42342A" opacity="0.5" />
+    </svg>
+  </div>
+</div>
+

@@ -1,0 +1,12 @@
+<div class="category-showcase-grid" aria-label="Recipe categories">
+  {% for category in categories %}
+  {% set cat_name = category.name if category is mapping else category %}
+  {% set cat_slug = category.slug if category is mapping else (category|lower|replace(' ', '-')) %}
+  {% set cat_img = (category.image_url if category is mapping and category.image_url else None) or 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=800&q=80' %}
+  <a class="category-showcase-card" href="/recipes?category={{ cat_slug }}" data-spa-link title="Browse {{ cat_name }} recipes">
+    <img class="category-showcase-card__img" src="{{ cat_img }}" alt="{{ cat_name }}" loading="lazy">
+    <div class="category-showcase-card__overlay"></div>
+    <span class="category-showcase-card__title">{{ cat_name }}</span>
+  </a>
+  {% endfor %}
+</div>
